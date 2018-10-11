@@ -1,0 +1,17 @@
+language: go
+
+go:
+  - master
+
+script:
+  - make test-all
+  - make dist
+
+deploy:
+  - provider: releases
+    api_key: ${GITHUB_TOKEN}
+    file: _dist/helm-convert*
+    skip_cleanup: true
+    file_glob: true
+    on:
+      tags: true

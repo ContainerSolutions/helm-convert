@@ -1,0 +1,11 @@
+---
+name: "convert"
+version: "0.1.0"
+usage: "convert"
+description: |-
+  Convert Helm charts into Kustomize compatible package
+ignoreFlags: false
+useTunnel: false
+command: "$HELM_PLUGIN_DIR/helm-convert"
+hooks:
+  install: "$HELM_PLUGIN_DIR/install.sh"
