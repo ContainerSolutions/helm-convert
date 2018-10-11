@@ -62,3 +62,16 @@ $ helm convert --help
 # run lint, vet and tests
 $ make test-all
 ```
+
+## Features
+
+The conversion is currently quite basic and has the following features:
+
+- get image tags and store them in kustomization.yaml
+- get common labels and store them in kustomization.yaml
+- get resources and store them in kustomization.yaml
+- remove helm specific labels from manifests
+- remove helm specific annotations from manifests
+- get namespace and store it in kustomization.yaml
+- create secretGenerator based on secret resources (type Opaque and TLS)
+- create secretGenerator based on secret type TLS
