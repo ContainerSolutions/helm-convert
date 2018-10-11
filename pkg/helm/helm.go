@@ -27,6 +27,7 @@ import (
 
 var defaultKubeVersion = fmt.Sprintf("%s.%s", chartutil.DefaultKubeVersion.Major, chartutil.DefaultKubeVersion.Minor)
 
+// Helm type
 type Helm struct {
 	settings helm_env.EnvSettings
 	out      io.Writer

@@ -28,6 +28,7 @@ const (
 	DefaultKustomizationFilename = "kustomization.yaml"
 )
 
+// Generator type
 type Generator struct{}
 
 // NewGenerator contructs a new generator

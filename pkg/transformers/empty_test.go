@@ -176,7 +176,6 @@ func TestEmptyRun(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(test.input.resources, test.expected.resources) {
-				err = test.expected.resources.ErrorIfNotEqual(test.expected.resources)
 				t.Fatalf(
 					"expected: \n %v\ngot:\n %v",
 					spew.Sdump(test.expected.resources),

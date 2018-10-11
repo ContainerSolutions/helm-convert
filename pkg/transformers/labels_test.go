@@ -115,7 +115,7 @@ func TestLabelsRun(t *testing.T) {
 			},
 		},
 		{
-			name: "it should not delete labels that are not shared accross resources",
+			name: "it should not delete labels that are not shared across resources",
 			input: &labelsTransformerArgs{
 				config: &types.Kustomization{},
 				resources: resmap.ResMap{

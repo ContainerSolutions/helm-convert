@@ -81,6 +81,7 @@ const convertExample = `
   helm convert --set persistence.enabled=true stable/mongodb
 `
 
+// NewConvertCommand constructs a new convert command
 func NewConvertCommand() *cobra.Command {
 	k := &convertCmd{
 		out: os.Stdout,

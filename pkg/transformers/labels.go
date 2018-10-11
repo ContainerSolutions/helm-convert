@@ -40,8 +40,7 @@ func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources 
 	for _, res := range resources {
 		obj := res.UnstructuredContent()
 
-		_, found := obj["metadata"]
-		if !found {
+		if _, found := obj["metadata"]; !found {
 			return nil
 		}
 
@@ -80,15 +79,13 @@ func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources 
 	for _, res := range resources {
 		obj := res.UnstructuredContent()
 
-		_, found := obj["metadata"]
-		if !found {
+		if _, found := obj["metadata"]; !found {
 			return nil
 		}
 
 		metadata := obj["metadata"].(map[string]interface{})
 
-		_, found = metadata["labels"]
-		if !found {
+		if _, found := metadata["labels"]; !found {
 			return nil
 		}
 
