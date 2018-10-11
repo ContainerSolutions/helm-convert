@@ -5,8 +5,6 @@ Helm convert plugin
 convert existing charts into [Kustomize](https://github.com/kubernetes-sigs/kustomize)
 compatible package.
 
-![build status][badge-build-status] ![Image size][badge-image-size]
-
 [![Build Status](https://travis-ci.org/ContainerSolutions/helm-convert.svg?branch=master)](https://travis-ci.org/ContainerSolutions/helm-convert)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ContainerSolutions/helm-convert)](https://goreportcard.com/report/github.com/ContainerSolutions/helm-convert)
 
