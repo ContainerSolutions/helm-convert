@@ -78,6 +78,16 @@ func TestEmptyRun(t *testing.T) {
 									},
 									map[string]interface{}{
 										"name": "container-2",
+										"env": []interface{}{
+											map[string]interface{}{
+												"name":  "FOO",
+												"value": "BAR",
+											},
+											map[string]interface{}{
+												"name":  "FOO",
+												"value": nil,
+											},
+										},
 										"resources": map[string]interface{}{
 											"limits": map[string]interface{}{
 												"cpu": "1",
@@ -128,6 +138,15 @@ func TestEmptyRun(t *testing.T) {
 									},
 									map[string]interface{}{
 										"name": "container-2",
+										"env": []interface{}{
+											map[string]interface{}{
+												"name":  "FOO",
+												"value": "BAR",
+											},
+											map[string]interface{}{
+												"name": "FOO",
+											},
+										},
 										"resources": map[string]interface{}{
 											"limits": map[string]interface{}{
 												"cpu": "1",

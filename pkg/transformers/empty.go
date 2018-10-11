@@ -57,6 +57,9 @@ func (t *emptyTransformer) emptyRecursive(obj map[string]interface{}) (bool, err
 					}
 				}
 			}
+		// Remove keys with nil value
+		case nil:
+			delete(obj, key)
 		}
 	}
 
