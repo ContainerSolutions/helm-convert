@@ -67,22 +67,14 @@ require (
 	github.com/spf13/viper v1.2.1
 	github.com/technosophos/moniker v0.0.0-20180509230615-a5dbd03a2245 // indirect
 	github.com/ulikunitz/xz v0.5.4 // indirect
-	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b // indirect
-	golang.org/x/net v0.0.0-20180921000356-2f5d2388922f // indirect
-	golang.org/x/sys v0.0.0-20180921163948-d47a0f339242 // indirect
-	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2 // indirect
 	google.golang.org/grpc v1.15.0
-	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/square/go-jose.v2 v2.1.9 // indirect
 	k8s.io/api v0.0.0-20180628040859-072894a440bd
 	k8s.io/apiextensions-apiserver v0.0.0-20180628053655-3de98c57bc05
 	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
 	k8s.io/apiserver v0.0.0-20180628044425-01459b68eb5f
-	k8s.io/client-go v8.0.0+incompatible
+	k8s.io/client-go v7.0.0
 	k8s.io/helm v2.11.0-rc.4+incompatible
-	k8s.io/kube-openapi v0.0.0-20180731170545-e3762e86a74c // indirect
-	k8s.io/kubernetes v1.11.4-beta.0.0.20180921212103-bdfaef1882ff
+	k8s.io/kubernetes v1.11.3
 	k8s.io/utils v0.0.0-20180918230422-cd34563cd63c // indirect
 	sigs.k8s.io/kustomize v1.0.9-0.20180927233047-30597252c70c
-	vbom.ml/util v0.0.0-20180919145318-efcd4e0f9787 // indirect
 )

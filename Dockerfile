@@ -5,7 +5,7 @@ COPY go.sum .
 COPY go.mod .
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o helm-convert -ldflags "$LDFLAGS" main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o helm-convert -ldflags "$LDFLAGS" main.go
 
 FROM alpine AS helm
 ENV HELM_VERSION=v2.10.0

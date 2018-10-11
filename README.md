@@ -36,6 +36,14 @@ helm convert -f values.yaml stable/mongodb
 helm convert --set persistence.enabled=true stable/mongodb
 ```
 
+## Docker
+
+You can also execute Helm convert from Docker:
+
+```bash
+$ docker run -ti containersol/helm-convert convert --help
+```
+
 ## Development
 
 ```bash
