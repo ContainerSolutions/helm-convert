@@ -145,17 +145,17 @@ func (k *convertCmd) run() error {
 
 	// load chart
 	chartRequested, err := h.LoadChart(&helm.LoadChartConfig{
-		k.repoURL,
-		k.username,
-		k.password,
-		k.chart,
-		k.version,
-		k.depUp,
-		k.verify,
-		k.keyring,
-		k.certFile,
-		k.keyFile,
-		k.caFile,
+		RepoURL:  k.repoURL,
+		Username: k.username,
+		Password: k.password,
+		Chart:    k.chart,
+		Version:  k.version,
+		DepUp:    k.depUp,
+		Verify:   k.verify,
+		Keyring:  k.keyring,
+		CertFile: k.certFile,
+		KeyFile:  k.keyFile,
+		CaFile:   k.caFile,
 	})
 	if err != nil {
 		return prettyError(err)
@@ -173,13 +173,13 @@ func (k *convertCmd) run() error {
 
 	// render charts with given values
 	renderedManifests, err := h.RenderChart(&helm.RenderChartConfig{
-		chartRequested,
-		k.name,
-		k.namespace,
-		k.valueFiles,
-		k.values,
-		k.stringValues,
-		k.fileValues,
+		ChartRequested: chartRequested,
+		Name:           k.name,
+		Namespace:      k.namespace,
+		ValueFiles:     k.valueFiles,
+		Values:         k.values,
+		StringValues:   k.stringValues,
+		FileValues:     k.fileValues,
 	})
 	if err != nil {
 		return prettyError(err)
