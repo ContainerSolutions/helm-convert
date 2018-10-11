@@ -11,7 +11,6 @@ func main() {
 	defer glog.Flush()
 
 	if err := cmd.NewConvertCommand().Execute(); err != nil {
-		glog.Error(err)
 		os.Exit(1)
 	}
 	os.Exit(0)
