@@ -46,8 +46,7 @@ func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources 
 
 		metadata := obj["metadata"].(map[string]interface{})
 
-		_, found = metadata["labels"]
-		if !found {
+		if _, found := metadata["labels"]; !found {
 			return nil
 		}
 
