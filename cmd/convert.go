@@ -212,7 +212,7 @@ func (k *convertCmd) run() error {
 
 	// initialize transformers
 	r := []transformers.Transformer{
-		transformers.NewLabelsTransformer([]string{"chart", "release"}),
+		transformers.NewLabelsTransformer([]string{"chart", "release", "heritage"}),
 		transformers.NewAnnotationsTransformer([]string{
 			hooks.HookAnno,
 			hooks.HookWeightAnno,
