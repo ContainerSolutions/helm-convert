@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -10,22 +11,20 @@ import (
 	"regexp"
 	"strings"
 
-	helm_env "k8s.io/helm/pkg/helm/environment"
-	"k8s.io/helm/pkg/helm/helmpath"
-	"k8s.io/helm/pkg/hooks"
-
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
-
-	"github.com/ghodss/yaml"
-	"github.com/golang/glog"
-	"github.com/spf13/cobra"
-	"google.golang.org/grpc/status"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/generators"
 	"github.com/ContainerSolutions/helm-convert/pkg/helm"
 	"github.com/ContainerSolutions/helm-convert/pkg/transformers"
+	"github.com/golang/glog"
+	"github.com/spf13/cobra"
+	"google.golang.org/grpc/status"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
+	helm_env "k8s.io/helm/pkg/helm/environment"
+	"k8s.io/helm/pkg/helm/helmpath"
+	"k8s.io/helm/pkg/hooks"
+	"sigs.k8s.io/kustomize/pkg/resmap"
+	"sigs.k8s.io/kustomize/pkg/resource"
+	"sigs.k8s.io/kustomize/pkg/types"
 )
 
 var (
@@ -201,11 +200,13 @@ func (k *convertCmd) run() error {
 			continue
 		}
 
-		r, err := newResource([]byte(data))
+		resList, err := newResources([]byte(data))
 		if err != nil {
 			glog.Fatalf("Error converting yaml to resources: %v", err)
 		}
-		resources[r.Id()] = r
+		for _, r := range resList {
+			resources[r.Id()] = r
+		}
 	}
 
 	config := &types.Kustomization{}
@@ -241,16 +242,25 @@ func (k *convertCmd) run() error {
 	return nil
 }
 
-func newResource(in []byte) (output *resource.Resource, err error) {
-	m := map[string]interface{}{}
-
-	err = yaml.Unmarshal(in, &m)
-	if err != nil {
-		return
+func newResources(in []byte) ([]*resource.Resource, error) {
+	decoder := k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(in), 1024)
+	var result []*resource.Resource
+	var err error
+	for err == nil || isEmptyYamlError(err) {
+		var out unstructured.Unstructured
+		err = decoder.Decode(&out)
+		if err == nil {
+			result = append(result, resource.NewResourceFromUnstruct(out))
+		}
 	}
+	if err != io.EOF {
+		return nil, err
+	}
+	return result, nil
+}
 
-	output = resource.NewResourceFromMap(m)
-	return
+func isEmptyYamlError(err error) bool {
+	return strings.Contains(err.Error(), "is missing in 'null'")
 }
 
 func prettyError(err error) error {
