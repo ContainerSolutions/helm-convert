@@ -49,6 +49,7 @@ type convertCmd struct {
 	stringValues []string
 	version      string
 	depUp        bool
+	forceGen     bool
 
 	username string
 	password string
@@ -127,6 +128,7 @@ func NewConvertCommand() *cobra.Command {
 	f.StringVar(&k.keyFile, "key-file", "", "identify HTTPS client using this SSL key file")
 	f.StringVar(&k.caFile, "ca-file", "", "verify certificates of HTTPS-enabled servers using this CA bundle")
 	f.BoolVar(&k.depUp, "dep-up", false, "run helm dependency update before installing the chart")
+	f.BoolVar(&k.forceGen, "force", false, "convert chart even if the destination directory already exists")
 	f.StringVar(&k.username, "username", "", "chart repository username")
 	f.StringVar(&k.password, "password", "", "chart repository password")
 
@@ -232,7 +234,7 @@ func (k *convertCmd) run() error {
 	}
 
 	// write to disk
-	generator := generators.NewGenerator()
+	generator := generators.NewGenerator(k.forceGen)
 	err = generator.Render(k.destination, config, chartRequested.Metadata, resources)
 	if err != nil {
 		return err
