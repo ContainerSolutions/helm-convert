@@ -119,6 +119,7 @@ func NewConvertCommand() *cobra.Command {
 	f.StringArrayVar(&k.stringValues, "set-string", []string{}, "set STRING values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	f.BoolVar(&k.verify, "verify", false, "verify the package against its signature")
 	f.BoolVar(&k.verifyLater, "prov", false, "fetch the provenance file, but don't perform verification")
+	f.StringVar(&k.namespace, "namespace", "default", "global namespace to use for the manifests")
 	f.StringVar(&k.version, "version", "", "specific version of a chart. Without this, the latest version is fetched")
 	f.StringVar(&k.keyring, "keyring", defaultKeyring(), "keyring containing public keys")
 	f.StringVarP(&k.destination, "destination", "d", "", "location to write the chart. If this and tardir are specified, tardir is appended to this")
