@@ -42,7 +42,7 @@ require (
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0 // indirect
 	gopkg.in/yaml.v2 v2.2.1 // indirect
 	k8s.io/api v0.0.0-20180628040859-072894a440bd
-	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d // indirect
+	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
 	k8s.io/client-go v7.0.0+incompatible // indirect
 	k8s.io/helm v2.11.0-rc.4+incompatible
 	sigs.k8s.io/kustomize v1.0.9-0.20180927233047-30597252c70c
