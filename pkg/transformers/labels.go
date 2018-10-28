@@ -37,24 +37,25 @@ func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources 
 	commonLabels := make(map[string]string, len(resources))
 
 	count := 0
+RESOURCES_LOOP:
 	for _, res := range resources {
 		obj := res.UnstructuredContent()
 
 		if _, found := obj["metadata"]; !found {
-			return nil
+			continue
 		}
 
 		metadata := obj["metadata"].(map[string]interface{})
 
 		if _, found := metadata["labels"]; !found {
-			return nil
+			continue
 		}
 
 		labels := metadata["labels"].(map[string]interface{})
 
 		for key, value := range labels {
 			if value == nil {
-				return nil
+				continue RESOURCES_LOOP
 			}
 
 			labelValue := value.(string)
@@ -79,13 +80,13 @@ func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources 
 		obj := res.UnstructuredContent()
 
 		if _, found := obj["metadata"]; !found {
-			return nil
+			continue
 		}
 
 		metadata := obj["metadata"].(map[string]interface{})
 
 		if _, found := metadata["labels"]; !found {
-			return nil
+			continue
 		}
 
 		labels := metadata["labels"].(map[string]interface{})

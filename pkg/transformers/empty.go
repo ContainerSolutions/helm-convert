@@ -21,7 +21,7 @@ func (t *emptyTransformer) Transform(config *types.Kustomization, resources resm
 
 		_, err := t.emptyRecursive(obj)
 		if err != nil {
-			return err
+			continue
 		}
 	}
 

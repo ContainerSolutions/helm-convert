@@ -24,7 +24,7 @@ func (pt *imageTagTransformer) Transform(config *types.Kustomization, resources 
 	for _, res := range resources {
 		err := pt.findImage(config, res.UnstructuredContent())
 		if err != nil {
-			return err
+			continue
 		}
 	}
 	return nil
