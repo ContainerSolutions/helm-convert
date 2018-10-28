@@ -20,13 +20,14 @@ func NewAnnotationsTransformer(keys []string) Transformer {
 // Transform remove given annotations from manifests
 func (t *annotationsTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
 	// TODO: retrieve common annotations for config.CommonAnnotations
+RESOURCES_LOOP:
 	for _, res := range resources {
 		obj := res.UnstructuredContent()
 
 		for _, key := range t.keys {
 			err := utils.RecursivelyRemoveKey("annotations", key, obj)
 			if err != nil {
-				return err
+				continue RESOURCES_LOOP
 			}
 		}
 	}

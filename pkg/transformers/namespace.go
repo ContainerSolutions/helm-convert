@@ -18,21 +18,10 @@ func NewNamespaceTransformer() Transformer {
 func (t *namespaceTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
 	var namespace string
 	for _, res := range resources {
-		obj := res.UnstructuredContent()
-
-		_, found := obj["metadata"]
-		if !found {
+		resNamespace, err := res.GetFieldValue("metadata.namespace")
+		if err != nil {
 			continue
 		}
-
-		metadata := obj["metadata"].(map[string]interface{})
-
-		n, found := metadata["namespace"]
-		if !found {
-			continue
-		}
-
-		resNamespace := n.(string)
 
 		if namespace != "" && namespace != resNamespace {
 			return nil
@@ -44,20 +33,13 @@ func (t *namespaceTransformer) Transform(config *types.Kustomization, resources 
 	if namespace != "" {
 		// Delete the namespace key if it is globally set
 		for _, res := range resources {
+			_, err := res.GetFieldValue("metadata.namespace")
+			if err != nil {
+				continue
+			}
+
 			obj := res.UnstructuredContent()
-
-			_, found := obj["metadata"]
-			if !found {
-				continue
-			}
-
 			metadata := obj["metadata"].(map[string]interface{})
-
-			_, found = metadata["namespace"]
-			if !found {
-				continue
-			}
-
 			delete(metadata, "namespace")
 		}
 

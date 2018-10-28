@@ -22,7 +22,7 @@ func (t *secretTransformer) Transform(config *types.Kustomization, resources res
 	for _, res := range resources {
 		kind, err := res.GetFieldValue("kind")
 		if err != nil {
-			return err
+			continue
 		}
 
 		if kind != "Secret" {
@@ -31,7 +31,7 @@ func (t *secretTransformer) Transform(config *types.Kustomization, resources res
 
 		name, err := res.GetFieldValue("metadata.name")
 		if err != nil {
-			return err
+			continue
 		}
 
 		secretType, err := res.GetFieldValue("type")

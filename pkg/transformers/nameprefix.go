@@ -22,7 +22,7 @@ func (t *namePrefixTransformer) Transform(config *types.Kustomization, resources
 	for _, res := range resources {
 		name, err := res.GetFieldValue("metadata.name")
 		if err != nil {
-			return err
+			continue
 		}
 
 		resourceName = append(resourceName, name)
