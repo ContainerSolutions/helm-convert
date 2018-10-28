@@ -29,11 +29,13 @@ const (
 )
 
 // Generator type
-type Generator struct{}
+type Generator struct {
+	force bool
+}
 
 // NewGenerator contructs a new generator
-func NewGenerator() *Generator {
-	return &Generator{}
+func NewGenerator(force bool) *Generator {
+	return &Generator{force}
 }
 
 // Render to disk the kustomization.yaml, Kube-descriptor.yaml and associated resources
@@ -42,13 +44,15 @@ func (g *Generator) Render(destination string, config *types.Kustomization, meta
 
 	// chech if destination path already exist, prompt user to confirm override
 	if ok, _ := utils.PathExists(destination); ok {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("Destination directory '%s' already exist, override? [y/n]", destination)
-		approve, _ := reader.ReadString('\n')
-		approve = strings.Trim(approve, " \n")
+		if !g.force {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Printf("Destination directory '%s' already exist, override? [y/n] ", destination)
+			approve, _ := reader.ReadString('\n')
+			approve = strings.Trim(approve, " \n")
 
-		if approve != "y" && approve != "yes" {
-			return nil
+			if approve != "y" && approve != "yes" {
+				return nil
+			}
 		}
 	} else {
 		os.MkdirAll(destination, os.ModePerm)
