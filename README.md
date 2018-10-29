@@ -7,6 +7,7 @@ compatible package.
 
 [![Build Status](https://travis-ci.org/ContainerSolutions/helm-convert.svg?branch=master)](https://travis-ci.org/ContainerSolutions/helm-convert)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ContainerSolutions/helm-convert)](https://goreportcard.com/report/github.com/ContainerSolutions/helm-convert)
+[![GoDoc](https://godoc.org/github.com/ContainerSolutions/helm-convert?status.svg)](https://godoc.org/github.com/ContainerSolutions/helm-convert)
 
 
 ## Install
