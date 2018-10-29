@@ -1,22 +1,23 @@
 package transformers
 
 import (
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type emptyTransformer struct{}
 
 var _ Transformer = &emptyTransformer{}
 
-// NewEmptyTransformer constructs an emtpyTransformer
+// NewEmptyTransformer constructs an emptyTransformer
 func NewEmptyTransformer() Transformer {
 	return &emptyTransformer{}
 }
 
 // Transform remove empty maps from manifests (ie: empty labels, resources, etc.)
-func (t *emptyTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
-	for _, res := range resources {
+func (t *emptyTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
+	for _, res := range resources.ResMap {
 		obj := res.UnstructuredContent()
 
 		_, err := t.emptyRecursive(obj)

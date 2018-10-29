@@ -1,8 +1,8 @@
 package transformers
 
 import (
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 // multiTransformer contains a list of transformers
@@ -22,7 +22,7 @@ func NewMultiTransformer(t []Transformer) Transformer {
 }
 
 // Transform prepends the name prefix
-func (o *multiTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
+func (o *multiTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	for _, t := range o.transformers {
 		err := t.Transform(config, resources)
 		if err != nil {

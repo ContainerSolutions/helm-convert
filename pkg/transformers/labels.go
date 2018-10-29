@@ -1,10 +1,10 @@
 package transformers
 
 import (
-	"github.com/ContainerSolutions/helm-convert/pkg/utils"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/ContainerSolutions/helm-convert/pkg/utils"
 )
 
 type labelsTransformer struct {
@@ -20,7 +20,7 @@ func NewLabelsTransformer(keys []string) Transformer {
 
 // Transform finds common labels, if each resource contains a common label then
 // the label is added to the kustomization.yaml file
-func (t *labelsTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
+func (t *labelsTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	// delete unwanted labels
 	if err := t.removeLabels(config, resources); err != nil {
 		return err
@@ -33,12 +33,12 @@ func (t *labelsTransformer) Transform(config *types.Kustomization, resources res
 	return nil
 }
 
-func (t *labelsTransformer) commonLabels(config *types.Kustomization, resources resmap.ResMap) error {
-	commonLabels := make(map[string]string, len(resources))
+func (t *labelsTransformer) commonLabels(config *ktypes.Kustomization, resources *types.Resources) error {
+	commonLabels := make(map[string]string, len(resources.ResMap))
 
 	count := 0
 RESOURCES_LOOP:
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		obj := res.UnstructuredContent()
 
 		if _, found := obj["metadata"]; !found {
@@ -76,7 +76,7 @@ RESOURCES_LOOP:
 	}
 
 	// delete common labels from resources
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		obj := res.UnstructuredContent()
 
 		if _, found := obj["metadata"]; !found {
@@ -105,9 +105,9 @@ RESOURCES_LOOP:
 	return nil
 }
 
-func (t *labelsTransformer) removeLabels(config *types.Kustomization, resources resmap.ResMap) error {
+func (t *labelsTransformer) removeLabels(config *ktypes.Kustomization, resources *types.Resources) error {
 	paths := []string{"matchLabels", "labels"}
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		obj := res.UnstructuredContent()
 		for _, path := range paths {
 			for _, key := range t.keys {

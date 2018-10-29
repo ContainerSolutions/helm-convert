@@ -79,3 +79,4 @@ The conversion is currently quite basic and has the following features:
 - get namespace and store it in kustomization.yaml
 - create secretGenerator based on secret resources (type Opaque and TLS)
 - create secretGenerator based on secret type TLS
+- create configGenerator from multiline files

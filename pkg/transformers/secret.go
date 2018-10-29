@@ -4,8 +4,9 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type secretTransformer struct{}
@@ -18,8 +19,8 @@ func NewSecretTransformer() Transformer {
 }
 
 // Transform retrieve secrets from manifests and store them as secretGenerator in the kustomization.yaml
-func (t *secretTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
-	for _, res := range resources {
+func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
+	for _, res := range resources.ResMap {
 		kind, err := res.GetFieldValue("kind")
 		if err != nil {
 			continue
@@ -48,7 +49,7 @@ func (t *secretTransformer) Transform(config *types.Kustomization, resources res
 
 		data := obj["data"].(map[string]interface{})
 
-		secretArg := types.SecretArgs{
+		secretArg := ktypes.SecretArgs{
 			Name: name,
 			Type: secretType,
 		}
@@ -62,12 +63,12 @@ func (t *secretTransformer) Transform(config *types.Kustomization, resources res
 			commands[string(key)] = fmt.Sprintf("printf \\\"%s\\\"", string(decoded))
 		}
 
-		secretArg.CommandSources = types.CommandSources{
+		secretArg.CommandSources = ktypes.CommandSources{
 			Commands: commands,
 		}
 
 		config.SecretGenerator = append(config.SecretGenerator, secretArg)
-		delete(resources, res.Id())
+		delete(resources.ResMap, res.Id())
 	}
 
 	return nil

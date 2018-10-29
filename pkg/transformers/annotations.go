@@ -1,9 +1,10 @@
 package transformers
 
 import (
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
 )
 
 type annotationsTransformer struct {
@@ -18,10 +19,10 @@ func NewAnnotationsTransformer(keys []string) Transformer {
 }
 
 // Transform remove given annotations from manifests
-func (t *annotationsTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
+func (t *annotationsTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	// TODO: retrieve common annotations for config.CommonAnnotations
 RESOURCES_LOOP:
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		obj := res.UnstructuredContent()
 
 		for _, key := range t.keys {

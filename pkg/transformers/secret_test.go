@@ -10,15 +10,17 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
 	"github.com/davecgh/go-spew/spew"
 	corev1 "k8s.io/api/core/v1"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type secretTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestSecretRun(t *testing.T) {
@@ -41,42 +43,44 @@ func TestSecretRun(t *testing.T) {
 		{
 			name: "it should retrieve secrets",
 			input: &secretTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(secret, "secret1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Secret",
-							"metadata": map[string]interface{}{
-								"name": "secret1",
-							},
-							"type": string(corev1.SecretTypeOpaque),
-							"data": map[string]interface{}{
-								"DB_USERNAME": base64.StdEncoding.EncodeToString([]byte("admin")),
-								"DB_PASSWORD": base64.StdEncoding.EncodeToString([]byte("password")),
-							},
-						}),
-					resource.NewResId(secret, "secret2"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Secret",
-							"metadata": map[string]interface{}{
-								"name": "secret2",
-							},
-							"type": string(corev1.SecretTypeTLS),
-							"data": map[string]interface{}{
-								"tls.cert": base64.StdEncoding.EncodeToString(cert),
-								"tls.key":  base64.StdEncoding.EncodeToString(key),
-							},
-						}),
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(secret, "secret1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Secret",
+								"metadata": map[string]interface{}{
+									"name": "secret1",
+								},
+								"type": string(corev1.SecretTypeOpaque),
+								"data": map[string]interface{}{
+									"DB_USERNAME": base64.StdEncoding.EncodeToString([]byte("admin")),
+									"DB_PASSWORD": base64.StdEncoding.EncodeToString([]byte("password")),
+								},
+							}),
+						resource.NewResId(secret, "secret2"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Secret",
+								"metadata": map[string]interface{}{
+									"name": "secret2",
+								},
+								"type": string(corev1.SecretTypeTLS),
+								"data": map[string]interface{}{
+									"tls.cert": base64.StdEncoding.EncodeToString(cert),
+									"tls.key":  base64.StdEncoding.EncodeToString(key),
+								},
+							}),
+					},
 				},
 			},
 			expected: &secretTransformerArgs{
-				config: &types.Kustomization{
-					SecretGenerator: []types.SecretArgs{
-						types.SecretArgs{
+				config: &ktypes.Kustomization{
+					SecretGenerator: []ktypes.SecretArgs{
+						ktypes.SecretArgs{
 							Name: "secret1",
-							CommandSources: types.CommandSources{
+							CommandSources: ktypes.CommandSources{
 								Commands: map[string]string{
 									"DB_USERNAME": "printf \\\"admin\\\"",
 									"DB_PASSWORD": "printf \\\"password\\\"",
@@ -84,9 +88,9 @@ func TestSecretRun(t *testing.T) {
 							},
 							Type: string(corev1.SecretTypeOpaque),
 						},
-						types.SecretArgs{
+						ktypes.SecretArgs{
 							Name: "secret2",
-							CommandSources: types.CommandSources{
+							CommandSources: ktypes.CommandSources{
 								Commands: map[string]string{
 									"tls.cert": "printf \\\"" + string(cert) + "\\\"",
 									"tls.key":  "printf \\\"" + string(key) + "\\\"",
@@ -96,7 +100,9 @@ func TestSecretRun(t *testing.T) {
 						},
 					},
 				},
-				resources: resmap.ResMap{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{},
+				},
 			},
 		},
 	} {

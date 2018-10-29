@@ -1,8 +1,8 @@
 package transformers
 
 import (
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type namespaceTransformer struct{}
@@ -15,9 +15,9 @@ func NewNamespaceTransformer() Transformer {
 }
 
 // Transform set the namespace if all resources have the same namespace
-func (t *namespaceTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
+func (t *namespaceTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	var namespace string
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		resNamespace, err := res.GetFieldValue("metadata.namespace")
 		if err != nil {
 			continue
@@ -32,7 +32,7 @@ func (t *namespaceTransformer) Transform(config *types.Kustomization, resources 
 
 	if namespace != "" {
 		// Delete the namespace key if it is globally set
-		for _, res := range resources {
+		for _, res := range resources.ResMap {
 			_, err := res.GetFieldValue("metadata.namespace")
 			if err != nil {
 				continue

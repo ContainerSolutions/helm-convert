@@ -8,14 +8,15 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/davecgh/go-spew/spew"
 )
 
 type emptyTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestEmptyRun(t *testing.T) {
@@ -30,132 +31,136 @@ func TestEmptyRun(t *testing.T) {
 		{
 			name: "it should remove empty values",
 			input: &emptyTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Ingress",
-							"metadata": map[string]interface{}{
-								"name":   "ing1",
-								"labels": map[string]interface{}{},
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"labels": map[string]interface{}{
-									"app": "deploy1",
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Ingress",
+								"metadata": map[string]interface{}{
+									"name":   "ing1",
+									"labels": map[string]interface{}{},
 								},
-							},
-							"spec": map[string]interface{}{
-								"template": map[string]interface{}{
-									"metadata": map[string]interface{}{
-										"labels": map[string]interface{}{},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"labels": map[string]interface{}{
+										"app": "deploy1",
 									},
 								},
-							},
-						},
-					),
-					resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy2",
-								"labels": map[string]interface{}{
-									"app": "deploy2",
-								},
-							},
-							"spec": map[string]interface{}{
-								"containers": []interface{}{
-									map[string]interface{}{
-										"name":      "container-1",
-										"resources": map[string]interface{}{},
-									},
-									map[string]interface{}{
-										"name": "container-2",
-										"env": []interface{}{
-											map[string]interface{}{
-												"name":  "FOO",
-												"value": "BAR",
-											},
-											map[string]interface{}{
-												"name":  "FOO",
-												"value": nil,
-											},
-										},
-										"resources": map[string]interface{}{
-											"limits": map[string]interface{}{
-												"cpu": "1",
-											},
+								"spec": map[string]interface{}{
+									"template": map[string]interface{}{
+										"metadata": map[string]interface{}{
+											"labels": map[string]interface{}{},
 										},
 									},
 								},
 							},
-						}),
+						),
+						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy2",
+									"labels": map[string]interface{}{
+										"app": "deploy2",
+									},
+								},
+								"spec": map[string]interface{}{
+									"containers": []interface{}{
+										map[string]interface{}{
+											"name":      "container-1",
+											"resources": map[string]interface{}{},
+										},
+										map[string]interface{}{
+											"name": "container-2",
+											"env": []interface{}{
+												map[string]interface{}{
+													"name":  "FOO",
+													"value": "BAR",
+												},
+												map[string]interface{}{
+													"name":  "FOO",
+													"value": nil,
+												},
+											},
+											"resources": map[string]interface{}{
+												"limits": map[string]interface{}{
+													"cpu": "1",
+												},
+											},
+										},
+									},
+								},
+							}),
+					},
 				},
 			},
 			expected: &emptyTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Ingress",
-							"metadata": map[string]interface{}{
-								"name": "ing1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"labels": map[string]interface{}{
-									"app": "deploy1",
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Ingress",
+								"metadata": map[string]interface{}{
+									"name": "ing1",
 								},
-							},
-						}),
-					resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy2",
-								"labels": map[string]interface{}{
-									"app": "deploy2",
-								},
-							},
-							"spec": map[string]interface{}{
-								"containers": []interface{}{
-									map[string]interface{}{
-										"name": "container-1",
-									},
-									map[string]interface{}{
-										"name": "container-2",
-										"env": []interface{}{
-											map[string]interface{}{
-												"name":  "FOO",
-												"value": "BAR",
-											},
-											map[string]interface{}{
-												"name": "FOO",
-											},
-										},
-										"resources": map[string]interface{}{
-											"limits": map[string]interface{}{
-												"cpu": "1",
-											},
-										},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"labels": map[string]interface{}{
+										"app": "deploy1",
 									},
 								},
-							},
-						}),
+							}),
+						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy2",
+									"labels": map[string]interface{}{
+										"app": "deploy2",
+									},
+								},
+								"spec": map[string]interface{}{
+									"containers": []interface{}{
+										map[string]interface{}{
+											"name": "container-1",
+										},
+										map[string]interface{}{
+											"name": "container-2",
+											"env": []interface{}{
+												map[string]interface{}{
+													"name":  "FOO",
+													"value": "BAR",
+												},
+												map[string]interface{}{
+													"name": "FOO",
+												},
+											},
+											"resources": map[string]interface{}{
+												"limits": map[string]interface{}{
+													"cpu": "1",
+												},
+											},
+										},
+									},
+								},
+							}),
+					},
 				},
 			},
 		},

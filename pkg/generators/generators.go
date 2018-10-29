@@ -9,14 +9,12 @@ import (
 	"path"
 	"strings"
 
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
-
-	"k8s.io/helm/pkg/proto/hapi/chart"
-
 	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
+	"k8s.io/helm/pkg/proto/hapi/chart"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
 )
 
@@ -39,7 +37,7 @@ func NewGenerator(force bool) *Generator {
 }
 
 // Render to disk the kustomization.yaml, Kube-descriptor.yaml and associated resources
-func (g *Generator) Render(destination string, config *types.Kustomization, metadata *chart.Metadata, resources resmap.ResMap) error {
+func (g *Generator) Render(destination string, config *ktypes.Kustomization, metadata *chart.Metadata, resources *types.Resources) error {
 	var err error
 
 	// chech if destination path already exist, prompt user to confirm override
@@ -59,13 +57,21 @@ func (g *Generator) Render(destination string, config *types.Kustomization, meta
 	}
 
 	// render all manifests
-	for id, res := range resources {
+	for id, res := range resources.ResMap {
 		filename, err := utils.GetResourceFileName(id, res)
 		if err != nil {
 			return err
 		}
 
 		err = writeYamlFile(path.Join(destination, filename), res)
+		if err != nil {
+			return err
+		}
+	}
+
+	// render all config files
+	for filename, data := range resources.ConfigFiles {
+		err = writeFile(path.Join(destination, filename), []byte(data), 0644)
 		if err != nil {
 			return err
 		}
@@ -93,9 +99,14 @@ func writeYamlFile(filePath string, data interface{}) error {
 		return err
 	}
 
+	return writeFile(filePath, output, 0644)
+}
+
+// writeFile writes data to a file named by filename.
+func writeFile(filePath string, data []byte, perm os.FileMode) error {
 	glog.V(4).Infof("Writing %s", filePath)
 
-	err = ioutil.WriteFile(filePath, output, 0644)
+	err := ioutil.WriteFile(filePath, data, perm)
 	if err != nil {
 		return err
 	}

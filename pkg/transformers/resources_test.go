@@ -8,14 +8,15 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/davecgh/go-spew/spew"
 )
 
 type resourcesTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestResourcesRun(t *testing.T) {
@@ -31,67 +32,71 @@ func TestResourcesRun(t *testing.T) {
 		{
 			name: "it should list all resources",
 			input: &resourcesTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "service1",
-							},
-						}),
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "service1",
+								},
+							}),
+					},
 				},
 			},
 			expected: &resourcesTransformerArgs{
-				config: &types.Kustomization{
+				config: &ktypes.Kustomization{
 					Resources: []string{
 						"cm1-cm.yaml",
 						"deploy1-deploy.yaml",
 						"service1-svc.yaml",
 					},
 				},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "service1",
-							},
-						}),
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "service1",
+								},
+							}),
+					},
 				},
 			},
 		},

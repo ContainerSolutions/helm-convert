@@ -1,10 +1,9 @@
 package transformers
 
 import (
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
-
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type namePrefixTransformer struct{}
@@ -17,9 +16,9 @@ func NewNamePrefixTransformer() Transformer {
 }
 
 // Transform retrieve all resource name, if a prefix is detected, add it to the kustomization.yaml file
-func (t *namePrefixTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
+func (t *namePrefixTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	var resourceName []string
-	for _, res := range resources {
+	for _, res := range resources.ResMap {
 		name, err := res.GetFieldValue("metadata.name")
 		if err != nil {
 			continue
