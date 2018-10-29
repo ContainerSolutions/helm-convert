@@ -77,6 +77,6 @@ func RecursivelyRemoveKey(path, key string, obj map[string]interface{}) error {
 			}
 		}
 	}
-	return nil
 
+	return nil
 }

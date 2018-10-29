@@ -8,14 +8,16 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
 	"github.com/davecgh/go-spew/spew"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type imageTagTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestImageTagRun(t *testing.T) {
@@ -29,119 +31,123 @@ func TestImageTagRun(t *testing.T) {
 		{
 			name: "it should retrieve images",
 			input: &imageTagTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"spec": map[string]interface{}{
-									"template": map[string]interface{}{
-										"spec": map[string]interface{}{
-											"initContainers": []interface{}{
-												map[string]interface{}{
-													"name":  "busybox",
-													"image": "busybox",
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"spec": map[string]interface{}{
+										"template": map[string]interface{}{
+											"spec": map[string]interface{}{
+												"initContainers": []interface{}{
+													map[string]interface{}{
+														"name":  "busybox",
+														"image": "busybox",
+													},
 												},
-											},
-											"containers": []interface{}{
-												map[string]interface{}{
-													"name":  "nginx",
-													"image": "nginx:1.7.9",
-												},
-												map[string]interface{}{
-													"name":  "alpine",
-													"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
-												},
-											},
-										},
-									},
-								},
-							},
-						}),
-					resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"spec": map[string]interface{}{
-									"template": map[string]interface{}{
-										"spec": map[string]interface{}{
-											"containers": []interface{}{
-												map[string]interface{}{
-													"name":  "nginx",
-													"image": "nginx:1.7.9",
+												"containers": []interface{}{
+													map[string]interface{}{
+														"name":  "nginx",
+														"image": "nginx:1.7.9",
+													},
+													map[string]interface{}{
+														"name":  "alpine",
+														"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
+													},
 												},
 											},
 										},
 									},
 								},
-							},
-						}),
+							}),
+						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"spec": map[string]interface{}{
+										"template": map[string]interface{}{
+											"spec": map[string]interface{}{
+												"containers": []interface{}{
+													map[string]interface{}{
+														"name":  "nginx",
+														"image": "nginx:1.7.9",
+													},
+												},
+											},
+										},
+									},
+								},
+							}),
+					},
 				},
 			},
 			expected: &imageTagTransformerArgs{
-				config: &types.Kustomization{
-					ImageTags: []types.ImageTag{
-						types.ImageTag{Name: "nginx", NewTag: "1.7.9"},
-						types.ImageTag{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
-						types.ImageTag{Name: "busybox"},
+				config: &ktypes.Kustomization{
+					ImageTags: []ktypes.ImageTag{
+						ktypes.ImageTag{Name: "nginx", NewTag: "1.7.9"},
+						ktypes.ImageTag{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
+						ktypes.ImageTag{Name: "busybox"},
 					},
 				},
-				resources: resmap.ResMap{
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"spec": map[string]interface{}{
-									"template": map[string]interface{}{
-										"spec": map[string]interface{}{
-											"initContainers": []interface{}{
-												map[string]interface{}{
-													"name":  "busybox",
-													"image": "busybox",
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"spec": map[string]interface{}{
+										"template": map[string]interface{}{
+											"spec": map[string]interface{}{
+												"initContainers": []interface{}{
+													map[string]interface{}{
+														"name":  "busybox",
+														"image": "busybox",
+													},
 												},
-											},
-											"containers": []interface{}{
-												map[string]interface{}{
-													"name":  "nginx",
-													"image": "nginx:1.7.9",
-												},
-												map[string]interface{}{
-													"name":  "alpine",
-													"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
-												},
-											},
-										},
-									},
-								},
-							},
-						}),
-					resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"spec": map[string]interface{}{
-									"template": map[string]interface{}{
-										"spec": map[string]interface{}{
-											"containers": []interface{}{
-												map[string]interface{}{
-													"name":  "nginx",
-													"image": "nginx:1.7.9",
+												"containers": []interface{}{
+													map[string]interface{}{
+														"name":  "nginx",
+														"image": "nginx:1.7.9",
+													},
+													map[string]interface{}{
+														"name":  "alpine",
+														"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
+													},
 												},
 											},
 										},
 									},
 								},
-							},
-						}),
+							}),
+						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"spec": map[string]interface{}{
+										"template": map[string]interface{}{
+											"spec": map[string]interface{}{
+												"containers": []interface{}{
+													map[string]interface{}{
+														"name":  "nginx",
+														"image": "nginx:1.7.9",
+													},
+												},
+											},
+										},
+									},
+								},
+							}),
+					},
 				},
 			},
 		},

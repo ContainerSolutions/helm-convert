@@ -14,6 +14,7 @@ import (
 	"github.com/ContainerSolutions/helm-convert/pkg/generators"
 	"github.com/ContainerSolutions/helm-convert/pkg/helm"
 	"github.com/ContainerSolutions/helm-convert/pkg/transformers"
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc/status"
@@ -22,9 +23,8 @@ import (
 	helm_env "k8s.io/helm/pkg/helm/environment"
 	"k8s.io/helm/pkg/helm/helmpath"
 	"k8s.io/helm/pkg/hooks"
-	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 var (
@@ -189,7 +189,7 @@ func (k *convertCmd) run() error {
 	}
 
 	// convert Yaml to resource
-	resources := resmap.ResMap{}
+	resources := types.NewResources()
 	for _, m := range renderedManifests {
 		data := m.Content
 		b := filepath.Base(m.Name)
@@ -208,11 +208,11 @@ func (k *convertCmd) run() error {
 			glog.Fatalf("Error converting yaml to resources: %v", err)
 		}
 		for _, r := range resList {
-			resources[r.Id()] = r
+			resources.ResMap[r.Id()] = r
 		}
 	}
 
-	config := &types.Kustomization{}
+	config := &ktypes.Kustomization{}
 
 	// initialize transformers
 	r := []transformers.Transformer{
@@ -223,6 +223,7 @@ func (k *convertCmd) run() error {
 			hooks.HookDeleteAnno,
 		}),
 		transformers.NewImageTagTransformer(),
+		transformers.NewConfigMapTransformer(),
 		transformers.NewSecretTransformer(),
 		transformers.NewNamePrefixTransformer(),
 		transformers.NewResourcesTransformer(),

@@ -1,10 +1,9 @@
 package transformers
 
 import (
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
-
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type resourcesTransformer struct{}
@@ -17,8 +16,8 @@ func NewResourcesTransformer() Transformer {
 }
 
 // Transform retrieve all manifests name and store them as resources in the kustomization.yaml
-func (t *resourcesTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
-	for id, res := range resources {
+func (t *resourcesTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
+	for id, res := range resources.ResMap {
 		filename, err := utils.GetResourceFileName(id, res)
 		if err != nil {
 			return err

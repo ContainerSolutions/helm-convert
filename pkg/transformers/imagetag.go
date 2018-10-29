@@ -3,13 +3,14 @@ package transformers
 import (
 	"strings"
 
-	"sigs.k8s.io/kustomize/pkg/resmap"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 // imageTagTransformer replace image tags
 type imageTagTransformer struct {
-	imageTags []types.ImageTag
+	imageTags []ktypes.ImageTag
 }
 
 var _ Transformer = &imageTagTransformer{}
@@ -20,8 +21,8 @@ func NewImageTagTransformer() Transformer {
 }
 
 // Transform finds all images and store them in the kustomization.yaml file
-func (pt *imageTagTransformer) Transform(config *types.Kustomization, resources resmap.ResMap) error {
-	for _, res := range resources {
+func (pt *imageTagTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
+	for _, res := range resources.ResMap {
 		err := pt.findImage(config, res.UnstructuredContent())
 		if err != nil {
 			continue
@@ -30,7 +31,7 @@ func (pt *imageTagTransformer) Transform(config *types.Kustomization, resources 
 	return nil
 }
 
-func (pt *imageTagTransformer) findImage(config *types.Kustomization, obj map[string]interface{}) error {
+func (pt *imageTagTransformer) findImage(config *ktypes.Kustomization, obj map[string]interface{}) error {
 	paths := []string{"containers", "initContainers"}
 	found := false
 	for _, path := range paths {
@@ -48,7 +49,7 @@ func (pt *imageTagTransformer) findImage(config *types.Kustomization, obj map[st
 	return nil
 }
 
-func (pt *imageTagTransformer) getImageTag(config *types.Kustomization, obj map[string]interface{}, path string) error {
+func (pt *imageTagTransformer) getImageTag(config *ktypes.Kustomization, obj map[string]interface{}, path string) error {
 	containers := obj[path].([]interface{})
 LOOP_CONTAINERS:
 	for i := range containers {
@@ -70,7 +71,7 @@ LOOP_CONTAINERS:
 
 		s := strings.Split(image, separator)
 
-		imageTag := types.ImageTag{
+		imageTag := ktypes.ImageTag{
 			Name: s[0],
 		}
 
@@ -94,7 +95,7 @@ LOOP_CONTAINERS:
 	return nil
 }
 
-func (pt *imageTagTransformer) findContainers(config *types.Kustomization, obj map[string]interface{}) error {
+func (pt *imageTagTransformer) findContainers(config *ktypes.Kustomization, obj map[string]interface{}) error {
 	for key := range obj {
 		switch typedV := obj[key].(type) {
 		case map[string]interface{}:

@@ -8,14 +8,16 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
 	"github.com/davecgh/go-spew/spew"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type namePrefixTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestNamePrefixRun(t *testing.T) {
@@ -31,124 +33,132 @@ func TestNamePrefixRun(t *testing.T) {
 		{
 			name: "it should set the name prefix if it exists in the resource name",
 			input: &namePrefixTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "prefix-cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "prefix-deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "prefix-service1",
-							},
-						}),
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "prefix-cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "prefix-deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "prefix-service1",
+								},
+							}),
+					},
 				},
 			},
 			expected: &namePrefixTransformerArgs{
-				config: &types.Kustomization{
+				config: &ktypes.Kustomization{
 					NamePrefix: "prefix-",
 				},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "prefix-cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "prefix-deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "prefix-service1",
-							},
-						}),
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "prefix-cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "prefix-deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "prefix-service1",
+								},
+							}),
+					},
 				},
 			},
 		},
 		{
 			name: "it should not set the name prefix if there is no prefix detected in the resource name",
 			input: &namePrefixTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "prefix-cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "prefix-service1",
-							},
-						}),
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "prefix-cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "prefix-service1",
+								},
+							}),
+					},
 				},
 			},
 			expected: &namePrefixTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "ConfigMap",
-							"metadata": map[string]interface{}{
-								"name": "prefix-cm1",
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-							},
-						}),
-					resource.NewResId(service, "service1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Service",
-							"metadata": map[string]interface{}{
-								"name": "prefix-service1",
-							},
-						}),
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "ConfigMap",
+								"metadata": map[string]interface{}{
+									"name": "prefix-cm1",
+								},
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+								},
+							}),
+						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Service",
+								"metadata": map[string]interface{}{
+									"name": "prefix-service1",
+								},
+							}),
+					},
 				},
 			},
 		},

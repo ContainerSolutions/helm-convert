@@ -8,14 +8,16 @@ import (
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
-	"sigs.k8s.io/kustomize/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 
 	"github.com/davecgh/go-spew/spew"
+
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type annotationsTransformerArgs struct {
-	config    *types.Kustomization
-	resources resmap.ResMap
+	config    *ktypes.Kustomization
+	resources *types.Resources
 }
 
 func TestAnnotationsRun(t *testing.T) {
@@ -36,75 +38,79 @@ func TestAnnotationsRun(t *testing.T) {
 				"remove-me",
 			},
 			input: &annotationsTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Ingress",
-							"metadata": map[string]interface{}{
-								"name": "ing1",
-								"annotations": map[string]interface{}{
-									"kubernetes.io/ingress.class": "nginx",
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Ingress",
+								"metadata": map[string]interface{}{
+									"name": "ing1",
+									"annotations": map[string]interface{}{
+										"kubernetes.io/ingress.class": "nginx",
+									},
 								},
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "deploy1",
-								"annotations": map[string]interface{}{
-									"helm.sh/hook":        "pre-install",
-									"helm.sh/hook-weight": "5",
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name": "deploy1",
+									"annotations": map[string]interface{}{
+										"helm.sh/hook":        "pre-install",
+										"helm.sh/hook-weight": "5",
+									},
 								},
-							},
-							"spec": map[string]interface{}{
-								"template": map[string]interface{}{
-									"metadata": map[string]interface{}{
-										"annotations": map[string]interface{}{
-											"iam.amazonaws.com/role": "role-arn",
-											"remove-me":              "true",
+								"spec": map[string]interface{}{
+									"template": map[string]interface{}{
+										"metadata": map[string]interface{}{
+											"annotations": map[string]interface{}{
+												"iam.amazonaws.com/role": "role-arn",
+												"remove-me":              "true",
+											},
 										},
 									},
 								},
-							},
-						}),
+							}),
+					},
 				},
 			},
 			expected: &annotationsTransformerArgs{
-				config: &types.Kustomization{},
-				resources: resmap.ResMap{
-					resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Ingress",
-							"metadata": map[string]interface{}{
-								"name": "ing1",
-								"annotations": map[string]interface{}{
-									"kubernetes.io/ingress.class": "nginx",
+				config: &ktypes.Kustomization{},
+				resources: &types.Resources{
+					ResMap: resmap.ResMap{
+						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Ingress",
+								"metadata": map[string]interface{}{
+									"name": "ing1",
+									"annotations": map[string]interface{}{
+										"kubernetes.io/ingress.class": "nginx",
+									},
 								},
-							},
-						}),
-					resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
-						map[string]interface{}{
-							"apiVersion": "v1",
-							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name":        "deploy1",
-								"annotations": map[string]interface{}{},
-							},
-							"spec": map[string]interface{}{
-								"template": map[string]interface{}{
-									"metadata": map[string]interface{}{
-										"annotations": map[string]interface{}{
-											"iam.amazonaws.com/role": "role-arn",
+							}),
+						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Deployment",
+								"metadata": map[string]interface{}{
+									"name":        "deploy1",
+									"annotations": map[string]interface{}{},
+								},
+								"spec": map[string]interface{}{
+									"template": map[string]interface{}{
+										"metadata": map[string]interface{}{
+											"annotations": map[string]interface{}{
+												"iam.amazonaws.com/role": "role-arn",
+											},
 										},
 									},
 								},
-							},
-						}),
+							}),
+					},
 				},
 			},
 		},
