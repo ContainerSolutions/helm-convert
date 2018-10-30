@@ -3,9 +3,8 @@ package transformers
 import (
 	"strings"
 
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 // imageTagTransformer replace image tags

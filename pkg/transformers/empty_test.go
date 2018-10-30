@@ -2,18 +2,16 @@ package transformers
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/kylelemons/godebug/pretty"
 	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
-	"github.com/ContainerSolutions/helm-convert/pkg/types"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type emptyTransformerArgs struct {
@@ -175,20 +173,13 @@ func TestEmptyRun(t *testing.T) {
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			if !reflect.DeepEqual(test.input.config, test.expected.config) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.config),
-					spew.Sdump(test.input.config),
-				)
+
+			if diff := pretty.Compare(test.input.config, test.expected.config); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 
-			if !reflect.DeepEqual(test.input.resources, test.expected.resources) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.resources),
-					spew.Sdump(test.input.resources),
-				)
+			if diff := pretty.Compare(test.input.resources, test.expected.resources); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
 	}

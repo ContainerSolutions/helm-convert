@@ -1,10 +1,9 @@
 package transformers
 
 import (
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type labelsTransformer struct {

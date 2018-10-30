@@ -9,13 +9,12 @@ import (
 	"path"
 	"strings"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/ContainerSolutions/helm-convert/pkg/utils"
 	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
-	"github.com/ContainerSolutions/helm-convert/pkg/types"
-	"github.com/ContainerSolutions/helm-convert/pkg/utils"
 )
 
 const (

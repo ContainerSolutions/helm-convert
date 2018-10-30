@@ -3,10 +3,10 @@ package transformers
 import (
 	"encoding/base64"
 	"fmt"
-
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
+	"sort"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type secretTransformer struct{}
@@ -70,6 +70,11 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 		config.SecretGenerator = append(config.SecretGenerator, secretArg)
 		delete(resources.ResMap, res.Id())
 	}
+
+	// sort by name
+	sort.Slice(config.SecretGenerator, func(i, j int) bool {
+		return config.SecretGenerator[i].Name < config.SecretGenerator[j].Name
+	})
 
 	return nil
 }

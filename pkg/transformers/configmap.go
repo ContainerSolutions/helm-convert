@@ -3,11 +3,11 @@ package transformers
 import (
 	"fmt"
 	"regexp"
-
-	"github.com/golang/glog"
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
+	"sort"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/golang/glog"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type configMapTransformer struct{}
@@ -74,6 +74,9 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 				}
 			}
 		}
+
+		sort.Strings(literalSources)
+		sort.Strings(fileSources)
 
 		configMapArg.DataSources = ktypes.DataSources{
 			LiteralSources: literalSources,

@@ -1,9 +1,8 @@
 package transformers
 
 import (
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type emptyTransformer struct{}

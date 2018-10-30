@@ -2,10 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
+	"github.com/kylelemons/godebug/pretty"
 	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
 	"sigs.k8s.io/kustomize/pkg/resid"
@@ -191,12 +190,8 @@ func TestRecursivelyRemoveKey(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if !reflect.DeepEqual(test.input.obj, test.expected) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected),
-					spew.Sdump(test.input.obj),
-				)
+			if diff := pretty.Compare(test.input.obj, test.expected); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
 	}
