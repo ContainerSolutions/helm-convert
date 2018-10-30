@@ -22,8 +22,9 @@ func NewImageTagTransformer() Transformer {
 
 // Transform finds all images and store them in the kustomization.yaml file
 func (pt *imageTagTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
-	for _, res := range resources.ResMap {
-		err := pt.findImage(config, res.UnstructuredContent())
+	for id := range resources.ResMap {
+		obj := resources.ResMap[id].Map()
+		err := pt.findImage(config, obj)
 		if err != nil {
 			continue
 		}

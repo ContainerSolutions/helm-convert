@@ -46,5 +46,5 @@ require (
 	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
 	k8s.io/client-go v7.0.0+incompatible // indirect
 	k8s.io/helm v2.11.0-rc.4+incompatible
-	sigs.k8s.io/kustomize v1.0.9-0.20180927233047-30597252c70c
+	sigs.k8s.io/kustomize v1.0.10
 )

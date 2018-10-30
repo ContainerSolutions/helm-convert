@@ -5,7 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
@@ -22,6 +24,7 @@ type emptyTransformerArgs struct {
 func TestEmptyRun(t *testing.T) {
 	var ingress = gvk.Gvk{Kind: "Ingress"}
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -34,7 +37,7 @@ func TestEmptyRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+						resid.NewResId(ingress, "ing1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Ingress",
@@ -43,7 +46,7 @@ func TestEmptyRun(t *testing.T) {
 									"labels": map[string]interface{}{},
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -62,7 +65,7 @@ func TestEmptyRun(t *testing.T) {
 								},
 							},
 						),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -106,7 +109,7 @@ func TestEmptyRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+						resid.NewResId(ingress, "ing1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Ingress",
@@ -114,7 +117,7 @@ func TestEmptyRun(t *testing.T) {
 									"name": "ing1",
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -125,7 +128,7 @@ func TestEmptyRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",

@@ -7,7 +7,9 @@ import (
 	"reflect"
 	"testing"
 
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
@@ -17,6 +19,8 @@ import (
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
+
+var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 type secretTransformerArgs struct {
 	config    *ktypes.Kustomization
@@ -46,7 +50,7 @@ func TestSecretRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(secret, "secret1"): resource.NewResourceFromMap(
+						resid.NewResId(secret, "secret1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Secret",
@@ -59,7 +63,7 @@ func TestSecretRun(t *testing.T) {
 									"DB_PASSWORD": base64.StdEncoding.EncodeToString([]byte("password")),
 								},
 							}),
-						resource.NewResId(secret, "secret2"): resource.NewResourceFromMap(
+						resid.NewResId(secret, "secret2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Secret",

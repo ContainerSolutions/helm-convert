@@ -5,7 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
@@ -21,6 +23,7 @@ type configMapTransformerArgs struct {
 
 func TestConfigMapRun(t *testing.T) {
 	var configmap = gvk.Gvk{Version: "v1", Kind: "ConfigMap"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -33,7 +36,7 @@ func TestConfigMapRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(configmap, "configmap1"): resource.NewResourceFromMap(
+						resid.NewResId(configmap, "configmap1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "ConfigMap",

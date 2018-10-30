@@ -6,11 +6,12 @@ import (
 	"sort"
 	"strings"
 
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resource"
 )
 
 // GetResourceFileName return a resource name from metadata.name
-func GetResourceFileName(id resource.ResId, res *resource.Resource) (string, error) {
+func GetResourceFileName(id resid.ResId, res *resource.Resource) (string, error) {
 	kind, err := res.GetFieldValue("kind")
 	if err != nil {
 		return "", err

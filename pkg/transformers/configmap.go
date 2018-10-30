@@ -23,7 +23,7 @@ func NewConfigMapTransformer() Transformer {
 
 // Transform retrieve configmap from manifests and store them as configMapGenerator in the kustomization.yaml
 func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
-	for _, res := range resources.ResMap {
+	for id, res := range resources.ResMap {
 		kind, err := res.GetFieldValue("kind")
 		if err != nil {
 			return err
@@ -38,7 +38,7 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 			return err
 		}
 
-		obj := res.UnstructuredContent()
+		obj := resources.ResMap[id].Map()
 
 		if _, found := obj["data"]; !found {
 			glog.V(8).Infof("Data field from configmap '%s' was not found", name)

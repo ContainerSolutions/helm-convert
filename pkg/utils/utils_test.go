@@ -5,14 +5,17 @@ import (
 	"reflect"
 	"testing"
 
-	"sigs.k8s.io/kustomize/pkg/gvk"
-	"sigs.k8s.io/kustomize/pkg/resource"
-
 	"github.com/davecgh/go-spew/spew"
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
+	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
+	"sigs.k8s.io/kustomize/pkg/resource"
 )
 
+var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
+
 type getResourceFileNameArgs struct {
-	id       resource.ResId
+	id       resid.ResId
 	resource *resource.Resource
 }
 
@@ -27,8 +30,8 @@ func TestGetResourceFileName(t *testing.T) {
 		{
 			name: "it should return a filename",
 			input: getResourceFileNameArgs{
-				id: resource.NewResId(deploy, "deploy1"),
-				resource: resource.NewResourceFromMap(
+				id: resid.NewResId(deploy, "deploy1"),
+				resource: rf.FromMap(
 					map[string]interface{}{
 						"apiVersion": "v1",
 						"kind":       "Deployment",

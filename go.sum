@@ -116,5 +116,5 @@ k8s.io/client-go v7.0.0+incompatible h1:kiH+Y6hn+pc78QS/mtBfMJAMIIaWevHi++JvOGEE
 k8s.io/client-go v7.0.0+incompatible/go.mod h1:7vJpHMYJwNQCWgzmNV+VYUl1zCObLyodBc8nIyt8L5s=
 k8s.io/helm v2.11.0-rc.4+incompatible h1:+eF/aGKA9M2u2TVFyWFyMIA7lChdMdvyBFuXzZsoXRo=
 k8s.io/helm v2.11.0-rc.4+incompatible/go.mod h1:LZzlS4LQBHfciFOurYBFkCMTaZ0D1l+p0teMg7TSULI=
-sigs.k8s.io/kustomize v1.0.9-0.20180927233047-30597252c70c h1:Vo5jvg6jg33MJyq8HRyKNv6pIx4CSt8l9hIMSiOgzok=
-sigs.k8s.io/kustomize v1.0.9-0.20180927233047-30597252c70c/go.mod h1:MkjgH3RdOWrievjo6c9T245dYlB5QeXV4WCbnt/PEpU=
+sigs.k8s.io/kustomize v1.0.10 h1:KngFW4wrk7VRlvk1vJOF498rkxp088d8IHSrFsT1rz4=
+sigs.k8s.io/kustomize v1.0.10/go.mod h1:MkjgH3RdOWrievjo6c9T245dYlB5QeXV4WCbnt/PEpU=

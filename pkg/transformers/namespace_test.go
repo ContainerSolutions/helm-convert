@@ -5,7 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
@@ -23,6 +25,7 @@ func TestNamespaceRun(t *testing.T) {
 	var service = gvk.Gvk{Version: "v1", Kind: "Service"}
 	var cmap = gvk.Gvk{Version: "v1", Kind: "ConfigMap"}
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -35,7 +38,7 @@ func TestNamespaceRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+						resid.NewResId(cmap, "cm1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "ConfigMap",
@@ -44,7 +47,7 @@ func TestNamespaceRun(t *testing.T) {
 									"namespace": "staging",
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -52,7 +55,7 @@ func TestNamespaceRun(t *testing.T) {
 									"name": "deploy1",
 								},
 							}),
-						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+						resid.NewResId(service, "service1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Service",
@@ -70,7 +73,7 @@ func TestNamespaceRun(t *testing.T) {
 				},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+						resid.NewResId(cmap, "cm1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "ConfigMap",
@@ -78,7 +81,7 @@ func TestNamespaceRun(t *testing.T) {
 									"name": "cm1",
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -86,7 +89,7 @@ func TestNamespaceRun(t *testing.T) {
 									"name": "deploy1",
 								},
 							}),
-						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+						resid.NewResId(service, "service1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Service",
@@ -104,7 +107,7 @@ func TestNamespaceRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+						resid.NewResId(cmap, "cm1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "ConfigMap",
@@ -113,7 +116,7 @@ func TestNamespaceRun(t *testing.T) {
 									"namespace": "production",
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -121,7 +124,7 @@ func TestNamespaceRun(t *testing.T) {
 									"name": "deploy1",
 								},
 							}),
-						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+						resid.NewResId(service, "service1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Service",
@@ -137,7 +140,7 @@ func TestNamespaceRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(cmap, "cm1"): resource.NewResourceFromMap(
+						resid.NewResId(cmap, "cm1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "ConfigMap",
@@ -146,7 +149,7 @@ func TestNamespaceRun(t *testing.T) {
 									"namespace": "production",
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -154,7 +157,7 @@ func TestNamespaceRun(t *testing.T) {
 									"name": "deploy1",
 								},
 							}),
-						resource.NewResId(service, "service1"): resource.NewResourceFromMap(
+						resid.NewResId(service, "service1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Service",

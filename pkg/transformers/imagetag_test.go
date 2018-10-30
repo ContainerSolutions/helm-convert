@@ -5,7 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
@@ -22,6 +24,7 @@ type imageTagTransformerArgs struct {
 
 func TestImageTagRun(t *testing.T) {
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -34,7 +37,7 @@ func TestImageTagRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -64,7 +67,7 @@ func TestImageTagRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -97,7 +100,7 @@ func TestImageTagRun(t *testing.T) {
 				},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -127,7 +130,7 @@ func TestImageTagRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
