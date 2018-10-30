@@ -32,13 +32,13 @@ func (t *namespaceTransformer) Transform(config *ktypes.Kustomization, resources
 
 	if namespace != "" {
 		// Delete the namespace key if it is globally set
-		for _, res := range resources.ResMap {
+		for id, res := range resources.ResMap {
 			_, err := res.GetFieldValue("metadata.namespace")
 			if err != nil {
 				continue
 			}
 
-			obj := res.UnstructuredContent()
+			obj := resources.ResMap[id].Map()
 			metadata := obj["metadata"].(map[string]interface{})
 			delete(metadata, "namespace")
 		}

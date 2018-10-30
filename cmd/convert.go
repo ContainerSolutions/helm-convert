@@ -18,11 +18,11 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc/status"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	k8syaml "k8s.io/apimachinery/pkg/util/yaml"
 	helm_env "k8s.io/helm/pkg/helm/environment"
 	"k8s.io/helm/pkg/helm/helmpath"
 	"k8s.io/helm/pkg/hooks"
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
@@ -248,13 +248,15 @@ func (k *convertCmd) run() error {
 
 func newResources(in []byte) ([]*resource.Resource, error) {
 	decoder := k8syaml.NewYAMLOrJSONDecoder(bytes.NewReader(in), 1024)
+	rf := resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
+
 	var result []*resource.Resource
 	var err error
 	for err == nil || isEmptyYamlError(err) {
-		var out unstructured.Unstructured
+		var out map[string]interface{}
 		err = decoder.Decode(&out)
 		if err == nil {
-			result = append(result, resource.NewResourceFromUnstruct(out))
+			result = append(result, rf.FromMap(out))
 		}
 	}
 	if err != io.EOF {

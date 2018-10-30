@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ghodss/yaml"
+	"github.com/golang/glog"
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/downloader"
 	"k8s.io/helm/pkg/getter"
@@ -20,9 +22,6 @@ import (
 	"k8s.io/helm/pkg/renderutil"
 	"k8s.io/helm/pkg/repo"
 	"k8s.io/helm/pkg/strvals"
-
-	"github.com/ghodss/yaml"
-	"github.com/golang/glog"
 )
 
 var defaultKubeVersion = fmt.Sprintf("%s.%s", chartutil.DefaultKubeVersion.Major, chartutil.DefaultKubeVersion.Minor)

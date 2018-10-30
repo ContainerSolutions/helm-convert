@@ -2,17 +2,16 @@ package transformers
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/kylelemons/godebug/pretty"
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
-	"github.com/davecgh/go-spew/spew"
-
-	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type imageTagTransformerArgs struct {
@@ -22,6 +21,7 @@ type imageTagTransformerArgs struct {
 
 func TestImageTagRun(t *testing.T) {
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -34,7 +34,7 @@ func TestImageTagRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -64,7 +64,7 @@ func TestImageTagRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -97,7 +97,7 @@ func TestImageTagRun(t *testing.T) {
 				},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -127,7 +127,7 @@ func TestImageTagRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy2"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy2"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -160,20 +160,12 @@ func TestImageTagRun(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if !reflect.DeepEqual(test.input.config, test.expected.config) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.config.ImageTags),
-					spew.Sdump(test.input.config.ImageTags),
-				)
+			if diff := pretty.Compare(test.input.config, test.expected.config); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 
-			if !reflect.DeepEqual(test.input.resources, test.expected.resources) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.resources),
-					spew.Sdump(test.input.resources),
-				)
+			if diff := pretty.Compare(test.input.resources, test.expected.resources); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
 	}

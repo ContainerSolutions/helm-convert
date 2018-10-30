@@ -2,17 +2,16 @@ package transformers
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
+	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	"github.com/kylelemons/godebug/pretty"
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
-	"github.com/davecgh/go-spew/spew"
-
-	"github.com/ContainerSolutions/helm-convert/pkg/types"
 )
 
 type annotationsTransformerArgs struct {
@@ -23,6 +22,7 @@ type annotationsTransformerArgs struct {
 func TestAnnotationsRun(t *testing.T) {
 	var ingress = gvk.Gvk{Kind: "Ingress"}
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
+	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
@@ -41,7 +41,7 @@ func TestAnnotationsRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+						resid.NewResId(ingress, "ing1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Ingress",
@@ -52,7 +52,7 @@ func TestAnnotationsRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -81,7 +81,7 @@ func TestAnnotationsRun(t *testing.T) {
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
-						resource.NewResId(ingress, "ing1"): resource.NewResourceFromMap(
+						resid.NewResId(ingress, "ing1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Ingress",
@@ -92,7 +92,7 @@ func TestAnnotationsRun(t *testing.T) {
 									},
 								},
 							}),
-						resource.NewResId(deploy, "deploy1"): resource.NewResourceFromMap(
+						resid.NewResId(deploy, "deploy1"): rf.FromMap(
 							map[string]interface{}{
 								"apiVersion": "v1",
 								"kind":       "Deployment",
@@ -122,20 +122,13 @@ func TestAnnotationsRun(t *testing.T) {
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			if !reflect.DeepEqual(test.input.config, test.expected.config) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.config),
-					spew.Sdump(test.input.config),
-				)
+
+			if diff := pretty.Compare(test.input.config, test.expected.config); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 
-			if !reflect.DeepEqual(test.input.resources, test.expected.resources) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected.resources),
-					spew.Sdump(test.input.resources),
-				)
+			if diff := pretty.Compare(test.input.resources, test.expected.resources); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
 	}

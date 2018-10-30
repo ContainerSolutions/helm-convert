@@ -2,17 +2,19 @@ package utils
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
+	"github.com/kylelemons/godebug/pretty"
+	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resource"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
+var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
+
 type getResourceFileNameArgs struct {
-	id       resource.ResId
+	id       resid.ResId
 	resource *resource.Resource
 }
 
@@ -27,8 +29,8 @@ func TestGetResourceFileName(t *testing.T) {
 		{
 			name: "it should return a filename",
 			input: getResourceFileNameArgs{
-				id: resource.NewResId(deploy, "deploy1"),
-				resource: resource.NewResourceFromMap(
+				id: resid.NewResId(deploy, "deploy1"),
+				resource: rf.FromMap(
 					map[string]interface{}{
 						"apiVersion": "v1",
 						"kind":       "Deployment",
@@ -188,12 +190,8 @@ func TestRecursivelyRemoveKey(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if !reflect.DeepEqual(test.input.obj, test.expected) {
-				t.Fatalf(
-					"expected: \n %v\ngot:\n %v",
-					spew.Sdump(test.expected),
-					spew.Sdump(test.input.obj),
-				)
+			if diff := pretty.Compare(test.input.obj, test.expected); diff != "" {
+				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
 	}

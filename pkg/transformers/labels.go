@@ -1,10 +1,9 @@
 package transformers
 
 import (
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type labelsTransformer struct {
@@ -38,8 +37,8 @@ func (t *labelsTransformer) commonLabels(config *ktypes.Kustomization, resources
 
 	count := 0
 RESOURCES_LOOP:
-	for _, res := range resources.ResMap {
-		obj := res.UnstructuredContent()
+	for id := range resources.ResMap {
+		obj := resources.ResMap[id].Map()
 
 		if _, found := obj["metadata"]; !found {
 			continue
@@ -76,8 +75,8 @@ RESOURCES_LOOP:
 	}
 
 	// delete common labels from resources
-	for _, res := range resources.ResMap {
-		obj := res.UnstructuredContent()
+	for id := range resources.ResMap {
+		obj := resources.ResMap[id].Map()
 
 		if _, found := obj["metadata"]; !found {
 			continue
@@ -107,8 +106,8 @@ RESOURCES_LOOP:
 
 func (t *labelsTransformer) removeLabels(config *ktypes.Kustomization, resources *types.Resources) error {
 	paths := []string{"matchLabels", "labels"}
-	for _, res := range resources.ResMap {
-		obj := res.UnstructuredContent()
+	for id := range resources.ResMap {
+		obj := resources.ResMap[id].Map()
 		for _, path := range paths {
 			for _, key := range t.keys {
 				utils.RecursivelyRemoveKey(path, key, obj)

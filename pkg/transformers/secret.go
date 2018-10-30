@@ -3,10 +3,10 @@ package transformers
 import (
 	"encoding/base64"
 	"fmt"
-
-	ktypes "sigs.k8s.io/kustomize/pkg/types"
+	"sort"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type secretTransformer struct{}
@@ -20,7 +20,7 @@ func NewSecretTransformer() Transformer {
 
 // Transform retrieve secrets from manifests and store them as secretGenerator in the kustomization.yaml
 func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
-	for _, res := range resources.ResMap {
+	for id, res := range resources.ResMap {
 		kind, err := res.GetFieldValue("kind")
 		if err != nil {
 			continue
@@ -40,7 +40,7 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 			secretType = "Opaque"
 		}
 
-		obj := res.UnstructuredContent()
+		obj := resources.ResMap[id].Map()
 
 		_, found := obj["data"]
 		if !found {
@@ -70,6 +70,11 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 		config.SecretGenerator = append(config.SecretGenerator, secretArg)
 		delete(resources.ResMap, res.Id())
 	}
+
+	// sort by name
+	sort.Slice(config.SecretGenerator, func(i, j int) bool {
+		return config.SecretGenerator[i].Name < config.SecretGenerator[j].Name
+	})
 
 	return nil
 }
