@@ -256,7 +256,20 @@ func newResources(in []byte) ([]*resource.Resource, error) {
 		var out map[string]interface{}
 		err = decoder.Decode(&out)
 		if err == nil {
-			result = append(result, rf.FromMap(out))
+			// ignore empty chunks
+			if len(out) == 0 {
+				continue
+			}
+
+			if list, ok := isList(out); ok {
+				for _, i := range list {
+					if item, ok := i.(map[string]interface{}); ok {
+						result = append(result, rf.FromMap(item))
+					}
+				}
+			} else {
+				result = append(result, rf.FromMap(out))
+			}
 		}
 	}
 	if err != io.EOF {
@@ -282,4 +295,14 @@ func prettyError(err error) error {
 // defaultKeyring returns the expanded path to the default keyring.
 func defaultKeyring() string {
 	return os.ExpandEnv("$HOME/.gnupg/pubring.gpg")
+}
+
+func isList(res map[string]interface{}) ([]interface{}, bool) {
+	itemList, ok := res["items"]
+	if !ok {
+		return nil, false
+	}
+
+	items, ok := itemList.([]interface{})
+	return items, ok
 }
