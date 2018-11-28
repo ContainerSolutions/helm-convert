@@ -50,6 +50,7 @@ type convertCmd struct {
 	version          string
 	depUp            bool
 	forceGen         bool
+	comments         bool
 
 	username string
 	password string
@@ -133,6 +134,7 @@ func NewConvertCommand() *cobra.Command {
 	f.BoolVar(&k.forceGen, "force", false, "convert chart even if the destination directory already exists")
 	f.StringVar(&k.username, "username", "", "chart repository username")
 	f.StringVar(&k.password, "password", "", "chart repository password")
+	f.BoolVar(&k.comments, "comments", true, "add default comments to kustomization.yaml file")
 
 	// log to stderr by default,
 	flag.Set("logtostderr", "true")
@@ -257,7 +259,7 @@ func (k *convertCmd) run() error {
 
 	// write to disk
 	generator := generators.NewGenerator(k.forceGen)
-	err = generator.Render(k.destination, config, chartRequested.Metadata, resources)
+	err = generator.Render(k.destination, config, chartRequested.Metadata, resources, k.comments)
 	if err != nil {
 		return err
 	}
