@@ -4,15 +4,12 @@ package generators
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/ContainerSolutions/helm-convert/pkg/utils"
-	"github.com/ghodss/yaml"
-	"github.com/golang/glog"
 	"k8s.io/helm/pkg/proto/hapi/chart"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
@@ -36,7 +33,7 @@ func NewGenerator(force bool) *Generator {
 }
 
 // Render to disk the kustomization.yaml, Kube-descriptor.yaml and associated resources
-func (g *Generator) Render(destination string, config *ktypes.Kustomization, metadata *chart.Metadata, resources *types.Resources) error {
+func (g *Generator) Render(destination string, config *ktypes.Kustomization, metadata *chart.Metadata, resources *types.Resources, addConfigComments bool) error {
 	var err error
 
 	// chech if destination path already exist, prompt user to confirm override
@@ -82,30 +79,14 @@ func (g *Generator) Render(destination string, config *ktypes.Kustomization, met
 		return err
 	}
 
+	// format and write kustomization.yaml
+	err = writeAndFormatKustomizationConfig(path.Join(destination, DefaultKustomizationFilename), addConfigComments)
+	if err != nil {
+		return err
+	}
+
 	// render Kube-descriptor.yaml
 	err = writeYamlFile(path.Join(destination, DefaultKubeDescriptorFilename), metadata)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// writeYamlFile write a given interface into yaml
-func writeYamlFile(filePath string, data interface{}) error {
-	output, err := yaml.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	return writeFile(filePath, output, 0644)
-}
-
-// writeFile writes data to a file named by filename.
-func writeFile(filePath string, data []byte, perm os.FileMode) error {
-	glog.V(4).Infof("Writing %s", filePath)
-
-	err := ioutil.WriteFile(filePath, data, perm)
 	if err != nil {
 		return err
 	}
