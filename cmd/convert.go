@@ -37,18 +37,19 @@ const defaultDirectoryPermission = 0755
 type convertCmd struct {
 	home helmpath.Home
 
-	chart        string
-	repoURL      string
-	destination  string
-	name         string
-	namespace    string
-	fileValues   []string
-	valueFiles   helm.ValueFiles
-	values       []string
-	stringValues []string
-	version      string
-	depUp        bool
-	forceGen     bool
+	chart            string
+	repoURL          string
+	destination      string
+	name             string
+	namespace        string
+	fileValues       []string
+	valueFiles       helm.ValueFiles
+	values           []string
+	stringValues     []string
+	skipTransformers []string
+	version          string
+	depUp            bool
+	forceGen         bool
 
 	username string
 	password string
@@ -117,6 +118,7 @@ func NewConvertCommand() *cobra.Command {
 	f.StringArrayVar(&k.values, "set", []string{}, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	f.StringArrayVar(&k.fileValues, "set-file", []string{}, "set values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)")
 	f.StringArrayVar(&k.stringValues, "set-string", []string{}, "set STRING values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
+	f.StringSliceVar(&k.skipTransformers, "skip-transformers", []string{}, "set a list of transformers that are skipped during the conversion process (can specify multiple or separate values with commas: secret,configmap)")
 	f.BoolVar(&k.verify, "verify", false, "verify the package against its signature")
 	f.BoolVar(&k.verifyLater, "prov", false, "fetch the provenance file, but don't perform verification")
 	f.StringVar(&k.namespace, "namespace", "default", "global namespace to use for the manifests")
@@ -214,8 +216,7 @@ func (k *convertCmd) run() error {
 
 	config := &ktypes.Kustomization{}
 
-	// initialize transformers
-	r := []transformers.Transformer{
+	defaultTransfomers := []transformers.Transformer{
 		transformers.NewLabelsTransformer([]string{"chart", "release", "heritage"}),
 		transformers.NewAnnotationsTransformer([]string{
 			hooks.HookAnno,
@@ -228,6 +229,24 @@ func (k *convertCmd) run() error {
 		transformers.NewNamePrefixTransformer(),
 		transformers.NewResourcesTransformer(),
 		transformers.NewEmptyTransformer(),
+	}
+
+	// load transformers
+	var r []transformers.Transformer
+	if len(k.skipTransformers) > 0 {
+		skipMap := make(map[string]struct{}, len(k.skipTransformers))
+		for _, s := range k.skipTransformers {
+			skipMap[strings.ToLower(s)] = struct{}{}
+		}
+
+		r = make([]transformers.Transformer, 0, len(defaultTransfomers))
+		for _, dt := range defaultTransfomers {
+			if _, ok := skipMap[transformerName(dt)]; !ok {
+				r = append(r, dt)
+			}
+		}
+	} else {
+		r = defaultTransfomers
 	}
 
 	// gather kustomization config via transformers
@@ -305,4 +324,13 @@ func isList(res map[string]interface{}) ([]interface{}, bool) {
 
 	items, ok := itemList.([]interface{})
 	return items, ok
+}
+
+func transformerName(t transformers.Transformer) string {
+	return strings.ToLower(
+		strings.TrimSuffix(
+			strings.TrimPrefix(
+				fmt.Sprintf("%T", t),
+				"*transformers."),
+			"Transformer"))
 }
