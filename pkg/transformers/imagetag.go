@@ -1,6 +1,7 @@
 package transformers
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
@@ -28,6 +29,11 @@ func (pt *imageTagTransformer) Transform(config *ktypes.Kustomization, resources
 			continue
 		}
 	}
+
+	sort.Slice(config.ImageTags, func(i, j int) bool {
+		return imageTagString(config.ImageTags[i]) < imageTagString(config.ImageTags[j])
+	})
+
 	return nil
 }
 
@@ -117,4 +123,11 @@ func (pt *imageTagTransformer) findContainers(config *ktypes.Kustomization, obj 
 		}
 	}
 	return nil
+}
+
+func imageTagString(imageTag ktypes.ImageTag) string {
+	if imageTag.Digest != "" {
+		return imageTag.Name + "@" + imageTag.Digest
+	}
+	return imageTag.Name + ":" + imageTag.NewTag
 }
