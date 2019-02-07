@@ -1,6 +1,6 @@
 ---
 name: "convert"
-version: "0.4.3"
+version: "0.4.4"
 usage: "convert"
 description: |-
   Convert Helm charts into Kustomize compatible package
