@@ -42,12 +42,10 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 
 		obj := resources.ResMap[id].Map()
 
-		_, found := obj["data"]
-		if !found {
-			return nil
+		var data map[string]interface{}
+		if _, found := obj["data"]; found && obj["data"] != nil {
+			data = obj["data"].(map[string]interface{})
 		}
-
-		data := obj["data"].(map[string]interface{})
 
 		secretArg := ktypes.SecretArgs{
 			Name: name,
