@@ -73,6 +73,16 @@ func TestSecretRun(t *testing.T) {
 									"tls.key":  base64.StdEncoding.EncodeToString(key),
 								},
 							}),
+						resid.NewResId(secret, "secret3"): rf.FromMap(
+							map[string]interface{}{
+								"apiVersion": "v1",
+								"kind":       "Secret",
+								"metadata": map[string]interface{}{
+									"name": "secret3",
+								},
+								"type": string(corev1.SecretTypeOpaque),
+								"data": nil,
+							}),
 					},
 				},
 			},
@@ -98,6 +108,13 @@ func TestSecretRun(t *testing.T) {
 								},
 							},
 							Type: string(corev1.SecretTypeTLS),
+						},
+						ktypes.SecretArgs{
+							Name: "secret3",
+							CommandSources: ktypes.CommandSources{
+								Commands: map[string]string{},
+							},
+							Type: string(corev1.SecretTypeOpaque),
 						},
 					},
 				},
