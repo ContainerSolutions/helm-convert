@@ -25,6 +25,6 @@ var commentsMapping = map[string]string{
 		"# a file for custom resource definition(CRD).",
 	"vars": "# Vars are used to insert values from resources that cannot\n" +
 		"# be referenced otherwise.",
-	"imageTags": "# ImageTags modify the tags for images without\n" +
+	"images": "# Images modify the tags for images without\n" +
 		"# creating patches.",
 }

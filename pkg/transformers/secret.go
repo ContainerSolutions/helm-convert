@@ -48,21 +48,24 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 		}
 
 		secretArg := ktypes.SecretArgs{
-			Name: name,
+			GeneratorArgs: ktypes.GeneratorArgs{
+				Name: name,
+			},
 			Type: secretType,
 		}
 
-		commands := make(map[string]string)
+		// TODO: handle envSource and fileSources
+		literalSources := []string{}
 		for key, value := range data {
 			decoded, err := base64.StdEncoding.DecodeString(value.(string))
 			if err != nil {
 				return fmt.Errorf("couldn't base64 decode the secret key '%s' with value '%v'", key, value)
 			}
-			commands[string(key)] = fmt.Sprintf("printf \\\"%s\\\"", string(decoded))
+			literalSources = append(literalSources, fmt.Sprintf("%s=%s", string(key), string(decoded)))
 		}
 
-		secretArg.CommandSources = ktypes.CommandSources{
-			Commands: commands,
+		secretArg.GeneratorArgs.DataSources = ktypes.DataSources{
+			LiteralSources: literalSources,
 		}
 
 		config.SecretGenerator = append(config.SecretGenerator, secretArg)

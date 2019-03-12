@@ -90,34 +90,40 @@ func TestSecretRun(t *testing.T) {
 				config: &ktypes.Kustomization{
 					SecretGenerator: []ktypes.SecretArgs{
 						ktypes.SecretArgs{
-							Name: "secret1",
-							CommandSources: ktypes.CommandSources{
-								Commands: map[string]string{
-									"DB_USERNAME": "printf \\\"admin\\\"",
-									"DB_PASSWORD": "printf \\\"password\\\"",
+							GeneratorArgs: ktypes.GeneratorArgs{
+								Name: "secret1",
+								DataSources: ktypes.DataSources{
+									LiteralSources: []string{
+										"DB_USERNAME=admin",
+										"DB_PASSWORD=password",
+									},
 								},
 							},
 							Type: string(corev1.SecretTypeOpaque),
 						},
 						ktypes.SecretArgs{
-							Name: "secret2",
-							CommandSources: ktypes.CommandSources{
-								Commands: map[string]string{
-									"tls.cert": "printf \\\"" + string(cert) + "\\\"",
-									"tls.key":  "printf \\\"" + string(key) + "\\\"",
+							GeneratorArgs: ktypes.GeneratorArgs{
+								Name: "secret2",
+								DataSources: ktypes.DataSources{
+									LiteralSources: []string{
+										"tls.cert": string(cert),
+										"tls.key":  string(key),
+									},
 								},
 							},
 							Type: string(corev1.SecretTypeTLS),
 						},
 						ktypes.SecretArgs{
-							Name: "secret3",
-							CommandSources: ktypes.CommandSources{
-								Commands: map[string]string{},
+							GeneratorArgs: ktypes.GeneratorArgs{
+								Name: "secret3",
+								DataSources: ktypes.DataSources{
+									LiteralSources: []string{},
+								},
 							},
 							Type: string(corev1.SecretTypeOpaque),
 						},
 					},
-				},
+				,
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{},
 				},

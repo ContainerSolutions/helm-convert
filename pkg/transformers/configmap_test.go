@@ -61,13 +61,15 @@ spring.datasource.password=pass123
 				config: &ktypes.Kustomization{
 					ConfigMapGenerator: []ktypes.ConfigMapArgs{
 						ktypes.ConfigMapArgs{
-							Name: "configmap1",
-							DataSources: ktypes.DataSources{
-								LiteralSources: []string{
-									"SOME_ENV=\"development\"",
-									"somekey=\"not a file\"",
+							GeneratorArgs: ktypes.GeneratorArgs{
+								Name: "configmap1",
+								DataSources: ktypes.DataSources{
+									LiteralSources: []string{
+										"SOME_ENV=\"development\"",
+										"somekey=\"not a file\"",
+									},
+									FileSources: []string{"configmap1-application.properties"},
 								},
-								FileSources: []string{"configmap1-application.properties"},
 							},
 						},
 					},

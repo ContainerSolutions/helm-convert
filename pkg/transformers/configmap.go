@@ -53,7 +53,9 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 		data := obj["data"].(map[string]interface{})
 
 		configMapArg := ktypes.ConfigMapArgs{
-			Name: name,
+			GeneratorArgs: ktypes.GeneratorArgs{
+				Name: name,
+			},
 		}
 
 		var fileSources []string
@@ -78,7 +80,7 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 		sort.Strings(literalSources)
 		sort.Strings(fileSources)
 
-		configMapArg.DataSources = ktypes.DataSources{
+		configMapArg.GeneratorArgs.DataSources = ktypes.DataSources{
 			LiteralSources: literalSources,
 			FileSources:    fileSources,
 		}
