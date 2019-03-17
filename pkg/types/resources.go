@@ -9,15 +9,15 @@ type Resources struct {
 	// ResMap contains a list of Kustomize resources
 	ResMap resmap.ResMap
 
-	// ConfigFiles contains a list of external configuration file retrieved from
-	// configmaps resources, ie: a multiline application.properties
-	ConfigFiles map[string]string
+	// SourceFiles contains a list of file retrieved from either configmaps or
+	// secret resources. The key being the filename, and the value its content
+	SourceFiles map[string]string
 }
 
 // NewResources constructs a new Resources
 func NewResources() *Resources {
 	return &Resources{
 		ResMap:      resmap.ResMap{},
-		ConfigFiles: make(map[string]string),
+		SourceFiles: make(map[string]string),
 	}
 }

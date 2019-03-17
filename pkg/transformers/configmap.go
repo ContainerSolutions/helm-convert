@@ -1,9 +1,7 @@
 package transformers
 
 import (
-	"fmt"
 	"regexp"
-	"sort"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/golang/glog"
@@ -51,6 +49,10 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 		}
 
 		data := obj["data"].(map[string]interface{})
+		dataMap := make(map[string]string, len(data))
+		for key, value := range data {
+			dataMap[key] = value.(string)
+		}
 
 		configMapArg := ktypes.ConfigMapArgs{
 			GeneratorArgs: ktypes.GeneratorArgs{
@@ -58,32 +60,7 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 			},
 		}
 
-		var fileSources []string
-		var literalSources []string
-
-		for key, value := range data {
-			// if multiline, store as external file otherwise literal
-			// TODO: detect if key/value file, ie: .env, .ini and set DataSources.EnvSource
-			if v, ok := value.(string); ok {
-				if regexpMultiline.MatchString(v) {
-					glog.V(8).Infof("Converting '%s' as external file from configmap '%s'", key, name)
-					filename := fmt.Sprintf("%s-%s", name, key)
-					fileSources = append(fileSources, filename)
-					resources.ConfigFiles[filename] = v
-				} else {
-					glog.V(8).Infof("Converting '%s' as literal value from configmap '%s'", key, name)
-					literalSources = append(literalSources, fmt.Sprintf("%s=\"%s\"", key, value))
-				}
-			}
-		}
-
-		sort.Strings(literalSources)
-		sort.Strings(fileSources)
-
-		configMapArg.GeneratorArgs.DataSources = ktypes.DataSources{
-			LiteralSources: literalSources,
-			FileSources:    fileSources,
-		}
+		configMapArg.GeneratorArgs.DataSources = TransformDataSource(name, dataMap, resources.SourceFiles)
 
 		config.ConfigMapGenerator = append(config.ConfigMapGenerator, configMapArg)
 		delete(resources.ResMap, res.Id())

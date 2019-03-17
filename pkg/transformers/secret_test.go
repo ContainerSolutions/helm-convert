@@ -93,10 +93,7 @@ func TestSecretRun(t *testing.T) {
 							GeneratorArgs: ktypes.GeneratorArgs{
 								Name: "secret1",
 								DataSources: ktypes.DataSources{
-									LiteralSources: []string{
-										"DB_USERNAME=admin",
-										"DB_PASSWORD=password",
-									},
+									EnvSource: "secret1.env",
 								},
 							},
 							Type: string(corev1.SecretTypeOpaque),
@@ -105,9 +102,9 @@ func TestSecretRun(t *testing.T) {
 							GeneratorArgs: ktypes.GeneratorArgs{
 								Name: "secret2",
 								DataSources: ktypes.DataSources{
-									LiteralSources: []string{
-										"tls.cert": string(cert),
-										"tls.key":  string(key),
+									FileSources: []string{
+										"secret2-tls.cert",
+										"secret2-tls.key",
 									},
 								},
 							},
@@ -123,16 +120,24 @@ func TestSecretRun(t *testing.T) {
 							Type: string(corev1.SecretTypeOpaque),
 						},
 					},
-				,
+				},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{},
+					SourceFiles: map[string]string{
+						"secret1.env":      "DB_PASSWORD=password\nDB_USERNAME=admin",
+						"secret2-tls.cert": string(cert),
+						"secret2-tls.key":  string(key),
+					},
 				},
 			},
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
+			res := types.NewResources()
+			res.ResMap = test.input.resources.ResMap
+
 			lt := NewSecretTransformer()
-			err := lt.Transform(test.input.config, test.input.resources)
+			err := lt.Transform(test.input.config, res)
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -142,7 +147,7 @@ func TestSecretRun(t *testing.T) {
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 
-			if diff := pretty.Compare(test.input.resources, test.expected.resources); diff != "" {
+			if diff := pretty.Compare(res, test.expected.resources); diff != "" {
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
