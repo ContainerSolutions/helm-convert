@@ -54,27 +54,29 @@ spring.datasource.password=pass123
 								},
 							}),
 					},
-					ConfigFiles: map[string]string{},
+					SourceFiles: map[string]string{},
 				},
 			},
 			expected: &configMapTransformerArgs{
 				config: &ktypes.Kustomization{
 					ConfigMapGenerator: []ktypes.ConfigMapArgs{
 						ktypes.ConfigMapArgs{
-							Name: "configmap1",
-							DataSources: ktypes.DataSources{
-								LiteralSources: []string{
-									"SOME_ENV=\"development\"",
-									"somekey=\"not a file\"",
+							GeneratorArgs: ktypes.GeneratorArgs{
+								Name: "configmap1",
+								DataSources: ktypes.DataSources{
+									LiteralSources: []string{
+										"SOME_ENV=development",
+										"somekey=not a file",
+									},
+									FileSources: []string{"configmap1-application.properties"},
 								},
-								FileSources: []string{"configmap1-application.properties"},
 							},
 						},
 					},
 				},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{},
-					ConfigFiles: map[string]string{
+					SourceFiles: map[string]string{
 						"configmap1-application.properties": `
 app.name=My app
 spring.jpa.hibernate.ddl-auto=update
@@ -88,8 +90,11 @@ spring.datasource.password=pass123
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
+			res := types.NewResources()
+			res.ResMap = test.input.resources.ResMap
+
 			lt := NewConfigMapTransformer()
-			err := lt.Transform(test.input.config, test.input.resources)
+			err := lt.Transform(test.input.config, res)
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -99,7 +104,7 @@ spring.datasource.password=pass123
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 
-			if diff := pretty.Compare(test.input.resources, test.expected.resources); diff != "" {
+			if diff := pretty.Compare(res, test.expected.resources); diff != "" {
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})

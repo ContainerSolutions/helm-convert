@@ -1,4 +1,4 @@
-FROM golang:1.11 AS build
+FROM golang:1.12 AS build
 ENV GOPATH=""
 ARG LDFLAGS
 COPY go.sum .
@@ -8,7 +8,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o helm-convert -ldflags "$LDFLAGS" main.go
 
 FROM alpine AS helm
-ENV HELM_VERSION=v2.10.0
+ENV HELM_VERSION=v2.13.0
 ENV HELM_TMP_FILE=helm-${HELM_VERSION}-linux-amd64.tar.gz
 RUN wget https://storage.googleapis.com/kubernetes-helm/${HELM_TMP_FILE} && \
   wget https://storage.googleapis.com/kubernetes-helm/${HELM_TMP_FILE}.sha256

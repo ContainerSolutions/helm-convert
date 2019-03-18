@@ -225,7 +225,7 @@ func (k *convertCmd) run() error {
 			hooks.HookWeightAnno,
 			hooks.HookDeleteAnno,
 		}),
-		transformers.NewImageTagTransformer(),
+		transformers.NewImageTransformer(),
 		transformers.NewConfigMapTransformer(),
 		transformers.NewSecretTransformer(),
 		transformers.NewNamePrefixTransformer(),

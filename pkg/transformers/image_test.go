@@ -8,29 +8,30 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 	"sigs.k8s.io/kustomize/k8sdeps/kunstruct"
 	"sigs.k8s.io/kustomize/pkg/gvk"
+	kimage "sigs.k8s.io/kustomize/pkg/image"
 	"sigs.k8s.io/kustomize/pkg/resid"
 	"sigs.k8s.io/kustomize/pkg/resmap"
 	"sigs.k8s.io/kustomize/pkg/resource"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
-type imageTagTransformerArgs struct {
+type imageTransformerArgs struct {
 	config    *ktypes.Kustomization
 	resources *types.Resources
 }
 
-func TestImageTagRun(t *testing.T) {
+func TestImageRun(t *testing.T) {
 	var deploy = gvk.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}
 	var rf = resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl())
 
 	for _, test := range []struct {
 		name     string
-		input    *imageTagTransformerArgs
-		expected *imageTagTransformerArgs
+		input    *imageTransformerArgs
+		expected *imageTransformerArgs
 	}{
 		{
 			name: "it should retrieve images",
-			input: &imageTagTransformerArgs{
+			input: &imageTransformerArgs{
 				config: &ktypes.Kustomization{},
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{
@@ -87,12 +88,12 @@ func TestImageTagRun(t *testing.T) {
 					},
 				},
 			},
-			expected: &imageTagTransformerArgs{
+			expected: &imageTransformerArgs{
 				config: &ktypes.Kustomization{
-					ImageTags: []ktypes.ImageTag{
-						ktypes.ImageTag{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
-						ktypes.ImageTag{Name: "busybox"},
-						ktypes.ImageTag{Name: "nginx", NewTag: "1.7.9"},
+					Images: []kimage.Image{
+						kimage.Image{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
+						kimage.Image{Name: "busybox"},
+						kimage.Image{Name: "nginx", NewTag: "1.7.9"},
 					},
 				},
 				resources: &types.Resources{
@@ -153,7 +154,7 @@ func TestImageTagRun(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
-			lt := NewImageTagTransformer()
+			lt := NewImageTransformer()
 			err := lt.Transform(test.input.config, test.input.resources)
 
 			if err != nil {

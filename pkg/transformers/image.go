@@ -5,23 +5,24 @@ import (
 	"strings"
 
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
+	kimage "sigs.k8s.io/kustomize/pkg/image"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
-// imageTagTransformer replace image tags
-type imageTagTransformer struct {
-	imageTags []ktypes.ImageTag
+// imageTransformer replace images
+type imageTransformer struct {
+	images []kimage.Image
 }
 
-var _ Transformer = &imageTagTransformer{}
+var _ Transformer = &imageTransformer{}
 
-// NewImageTagTransformer constructs a imageTagTransformer.
-func NewImageTagTransformer() Transformer {
-	return &imageTagTransformer{}
+// NewImageTransformer constructs a imageTransformer.
+func NewImageTransformer() Transformer {
+	return &imageTransformer{}
 }
 
 // Transform finds all images and store them in the kustomization.yaml file
-func (pt *imageTagTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
+func (pt *imageTransformer) Transform(config *ktypes.Kustomization, resources *types.Resources) error {
 	for id := range resources.ResMap {
 		obj := resources.ResMap[id].Map()
 		err := pt.findImage(config, obj)
@@ -30,14 +31,14 @@ func (pt *imageTagTransformer) Transform(config *ktypes.Kustomization, resources
 		}
 	}
 
-	sort.Slice(config.ImageTags, func(i, j int) bool {
-		return imageTagString(config.ImageTags[i]) < imageTagString(config.ImageTags[j])
+	sort.Slice(config.Images, func(i, j int) bool {
+		return imageString(config.Images[i]) < imageString(config.Images[j])
 	})
 
 	return nil
 }
 
-func (pt *imageTagTransformer) findImage(config *ktypes.Kustomization, obj map[string]interface{}) error {
+func (pt *imageTransformer) findImage(config *ktypes.Kustomization, obj map[string]interface{}) error {
 	paths := []string{"containers", "initContainers"}
 	found := false
 	for _, path := range paths {
@@ -55,7 +56,7 @@ func (pt *imageTagTransformer) findImage(config *ktypes.Kustomization, obj map[s
 	return nil
 }
 
-func (pt *imageTagTransformer) getImageTag(config *ktypes.Kustomization, obj map[string]interface{}, path string) error {
+func (pt *imageTransformer) getImageTag(config *ktypes.Kustomization, obj map[string]interface{}, path string) error {
 	containers := obj[path].([]interface{})
 LOOP_CONTAINERS:
 	for i := range containers {
@@ -66,42 +67,42 @@ LOOP_CONTAINERS:
 			continue
 		}
 
-		image := imagePath.(string)
+		imagePathStr := imagePath.(string)
 
-		hasDigest := strings.Contains(image, "@")
+		hasDigest := strings.Contains(imagePathStr, "@")
 		separator := ":"
 
 		if hasDigest {
 			separator = "@"
 		}
 
-		s := strings.Split(image, separator)
+		s := strings.Split(imagePathStr, separator)
 
-		imageTag := ktypes.ImageTag{
+		image := kimage.Image{
 			Name: s[0],
 		}
 
 		// doesn't add image if already in the list
-		for _, v := range config.ImageTags {
-			if v.Name == imageTag.Name {
+		for _, v := range config.Images {
+			if v.Name == image.Name {
 				continue LOOP_CONTAINERS
 			}
 		}
 
 		if len(s) > 1 {
 			if hasDigest {
-				imageTag.Digest = s[1]
+				image.Digest = s[1]
 			} else {
-				imageTag.NewTag = s[1]
+				image.NewTag = s[1]
 			}
 		}
 
-		config.ImageTags = append(config.ImageTags, imageTag)
+		config.Images = append(config.Images, image)
 	}
 	return nil
 }
 
-func (pt *imageTagTransformer) findContainers(config *ktypes.Kustomization, obj map[string]interface{}) error {
+func (pt *imageTransformer) findContainers(config *ktypes.Kustomization, obj map[string]interface{}) error {
 	for key := range obj {
 		switch typedV := obj[key].(type) {
 		case map[string]interface{}:
@@ -125,9 +126,9 @@ func (pt *imageTagTransformer) findContainers(config *ktypes.Kustomization, obj 
 	return nil
 }
 
-func imageTagString(imageTag ktypes.ImageTag) string {
-	if imageTag.Digest != "" {
-		return imageTag.Name + "@" + imageTag.Digest
+func imageString(image kimage.Image) string {
+	if image.Digest != "" {
+		return image.Name + "@" + image.Digest
 	}
-	return imageTag.Name + ":" + imageTag.NewTag
+	return image.Name + ":" + image.NewTag
 }

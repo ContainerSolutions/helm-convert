@@ -33,7 +33,8 @@ func NewGenerator(force bool) *Generator {
 }
 
 // Render to disk the kustomization.yaml, Kube-descriptor.yaml and associated resources
-func (g *Generator) Render(destination string, config *ktypes.Kustomization, metadata *chart.Metadata, resources *types.Resources, addConfigComments bool) error {
+func (g *Generator) Render(destination string, config *ktypes.Kustomization,
+	metadata *chart.Metadata, resources *types.Resources, addConfigComments bool) error {
 	var err error
 
 	// chech if destination path already exist, prompt user to confirm override
@@ -65,8 +66,10 @@ func (g *Generator) Render(destination string, config *ktypes.Kustomization, met
 		}
 	}
 
-	// render all config files
-	for filename, data := range resources.ConfigFiles {
+	// render all config and env files
+	for filename, data := range resources.SourceFiles {
+		// TODO: prevent overwriting of file, filename can be similar from one
+		// resource to another
 		err = writeFile(path.Join(destination, filename), []byte(data), 0644)
 		if err != nil {
 			return err
