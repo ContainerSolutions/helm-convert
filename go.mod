@@ -2,9 +2,9 @@ module github.com/ContainerSolutions/helm-convert
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
-	github.com/Masterminds/sprig v2.16.0+incompatible // indirect
-	github.com/aokoli/goutils v1.0.1 // indirect
+	github.com/Masterminds/sprig v2.18.1-0.20190301161902-9f8fceff796f+incompatible // indirect
 	github.com/cyphar/filepath-securejoin v0.2.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ghodss/yaml v1.0.0
@@ -14,7 +14,7 @@ require (
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/huandu/xstrings v1.2.0 // indirect
-	github.com/imdario/mergo v0.0.0-20141206190957-6633656539c1 // indirect
+	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.5 // indirect
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
@@ -29,7 +29,6 @@ require (
 	golang.org/x/net v0.0.0-20181005035420-146acd28ed58 // indirect
 	google.golang.org/grpc v1.15.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0 // indirect
 	gopkg.in/yaml.v2 v2.2.1 // indirect
 	k8s.io/api v0.0.0-20180628040859-072894a440bd
 	k8s.io/apimachinery v0.0.0-20180621070125-103fd098999d
