@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -37,20 +38,21 @@ const defaultDirectoryPermission = 0755
 type convertCmd struct {
 	home helmpath.Home
 
-	chart            string
-	repoURL          string
-	destination      string
-	name             string
-	namespace        string
-	fileValues       []string
-	valueFiles       helm.ValueFiles
-	values           []string
-	stringValues     []string
-	skipTransformers []string
-	version          string
-	depUp            bool
-	forceGen         bool
-	comments         bool
+	chart               string
+	repoURL             string
+	destination         string
+	resourceDestination string
+	name                string
+	namespace           string
+	fileValues          []string
+	valueFiles          helm.ValueFiles
+	values              []string
+	stringValues        []string
+	skipTransformers    []string
+	version             string
+	depUp               bool
+	forceGen            bool
+	comments            bool
 
 	username string
 	password string
@@ -126,6 +128,7 @@ func NewConvertCommand() *cobra.Command {
 	f.StringVar(&k.version, "version", "", "specific version of a chart. Without this, the latest version is fetched")
 	f.StringVar(&k.keyring, "keyring", defaultKeyring(), "keyring containing public keys")
 	f.StringVarP(&k.destination, "destination", "d", "", "location to write the chart. If this and tardir are specified, tardir is appended to this")
+	f.StringVarP(&k.resourceDestination, "resource-destination", "r", "", "location to write the resources.")
 	f.StringVar(&k.repoURL, "repo", "", "chart repository url where to locate the requested chart")
 	f.StringVar(&k.certFile, "cert-file", "", "identify HTTPS client using this SSL certificate file")
 	f.StringVar(&k.keyFile, "key-file", "", "identify HTTPS client using this SSL key file")
@@ -178,6 +181,10 @@ func (k *convertCmd) run() error {
 		k.name = chartRequested.Metadata.Name
 	}
 
+	if k.resourceDestination != "" {
+		os.MkdirAll(k.resourceDestination, 0755)
+	}
+
 	// render charts with given values
 	renderedManifests, err := h.RenderChart(&helm.RenderChartConfig{
 		ChartRequested: chartRequested,
@@ -212,6 +219,9 @@ func (k *convertCmd) run() error {
 			glog.Fatalf("Error converting yaml to resources: %v", err)
 		}
 		for _, r := range resList {
+			if k.resourceDestination != "" {
+				r.SetName(path.Join(k.resourceDestination, r.GetName()))
+			}
 			resources.ResMap[r.Id()] = r
 		}
 	}
@@ -228,7 +238,7 @@ func (k *convertCmd) run() error {
 		transformers.NewImageTransformer(),
 		transformers.NewConfigMapTransformer(),
 		transformers.NewSecretTransformer(),
-		transformers.NewNamePrefixTransformer(),
+		transformers.NewNamePrefixTransformer(k.resourceDestination),
 		transformers.NewResourcesTransformer(),
 		transformers.NewEmptyTransformer(),
 	}

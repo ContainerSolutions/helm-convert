@@ -6,13 +6,15 @@ import (
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
-type namePrefixTransformer struct{}
+type namePrefixTransformer struct {
+	ignoredPrefix string
+}
 
 var _ Transformer = &namePrefixTransformer{}
 
 // NewNamePrefixTransformer constructs a namePrefixTransformer.
-func NewNamePrefixTransformer() Transformer {
-	return &namePrefixTransformer{}
+func NewNamePrefixTransformer(ignoredPrefix string) Transformer {
+	return &namePrefixTransformer{ignoredPrefix}
 }
 
 // Transform retrieve all resource name, if a prefix is detected, add it to the kustomization.yaml file
@@ -29,7 +31,7 @@ func (t *namePrefixTransformer) Transform(config *ktypes.Kustomization, resource
 
 	prefix := utils.GetPrefix(resourceName)
 
-	if prefix != "" {
+	if prefix != t.ignoredPrefix {
 		config.NamePrefix = prefix
 	}
 

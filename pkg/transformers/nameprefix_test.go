@@ -164,7 +164,8 @@ func TestNamePrefixRun(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
-			lt := NewNamePrefixTransformer()
+			resourceDestination := ""
+			lt := NewNamePrefixTransformer(resourceDestination)
 			err := lt.Transform(test.input.config, test.input.resources)
 
 			if err != nil {
