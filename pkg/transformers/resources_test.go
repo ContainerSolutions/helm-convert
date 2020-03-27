@@ -103,7 +103,7 @@ func TestResourcesRun(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
-			lt := NewResourcesTransformer()
+			lt := NewResourcesTransformer("")
 			err := lt.Transform(test.input.config, test.input.resources)
 
 			if err != nil {

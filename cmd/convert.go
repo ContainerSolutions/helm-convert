@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -219,9 +218,9 @@ func (k *convertCmd) run() error {
 			glog.Fatalf("Error converting yaml to resources: %v", err)
 		}
 		for _, r := range resList {
-			if k.resourceDestination != "" {
-				r.SetName(path.Join(k.resourceDestination, r.GetName()))
-			}
+			// if k.resourceDestination != "" {
+			// 	r.SetName(path.Join(k.resourceDestination, r.GetName()))
+			// }
 			resources.ResMap[r.Id()] = r
 		}
 	}
@@ -238,8 +237,8 @@ func (k *convertCmd) run() error {
 		transformers.NewImageTransformer(),
 		transformers.NewConfigMapTransformer(),
 		transformers.NewSecretTransformer(),
-		transformers.NewNamePrefixTransformer(k.resourceDestination),
-		transformers.NewResourcesTransformer(),
+		transformers.NewNamePrefixTransformer(k.name),
+		transformers.NewResourcesTransformer(k.resourceDestination),
 		transformers.NewEmptyTransformer(),
 	}
 
@@ -268,7 +267,7 @@ func (k *convertCmd) run() error {
 	}
 
 	// write to disk
-	generator := generators.NewGenerator(k.forceGen)
+	generator := generators.NewGenerator(k.forceGen, k.resourceDestination)
 	err = generator.Render(k.destination, config, chartRequested.Metadata, resources, k.comments)
 	if err != nil {
 		return err

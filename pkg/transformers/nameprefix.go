@@ -31,7 +31,11 @@ func (t *namePrefixTransformer) Transform(config *ktypes.Kustomization, resource
 
 	prefix := utils.GetPrefix(resourceName)
 
-	if prefix != t.ignoredPrefix {
+	if prefix == t.ignoredPrefix {
+		prefix = ""
+	}
+
+	if prefix != "" {
 		config.NamePrefix = prefix
 	}
 

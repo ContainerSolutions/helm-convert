@@ -24,12 +24,13 @@ const (
 
 // Generator type
 type Generator struct {
-	force bool
+	force               bool
+	resourceDestination string
 }
 
 // NewGenerator contructs a new generator
-func NewGenerator(force bool) *Generator {
-	return &Generator{force}
+func NewGenerator(force bool, resourceDestination string) *Generator {
+	return &Generator{force, resourceDestination}
 }
 
 // Render to disk the kustomization.yaml, Kube-descriptor.yaml and associated resources
@@ -59,6 +60,7 @@ func (g *Generator) Render(destination string, config *ktypes.Kustomization,
 		if err != nil {
 			return err
 		}
+		filename = path.Join(g.resourceDestination, filename)
 
 		err = writeYamlFile(path.Join(destination, filename), res)
 		if err != nil {
