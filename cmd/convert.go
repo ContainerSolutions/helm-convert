@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -181,7 +182,7 @@ func (k *convertCmd) run() error {
 	}
 
 	if k.resourceDestination != "" {
-		os.MkdirAll(k.resourceDestination, 0755)
+		os.MkdirAll(path.Join(k.destination, k.resourceDestination), 0755)
 	}
 
 	// render charts with given values
