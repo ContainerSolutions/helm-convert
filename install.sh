@@ -8,7 +8,7 @@ HELM_CONVERT_VERSION=${HELM_CONVERT_VERSION:-$current_version}
 dir=${HELM_PLUGIN_DIR:-"$(helm home)/plugins/helm-convert"}
 os=$(uname -s | tr '[:upper:]' '[:lower:]')
 release_file="helm-convert_${os}_${HELM_CONVERT_VERSION}.tar.gz"
-url="https://github.com/ContainerSolutions/helm-convert/releases/download/v${HELM_CONVERT_VERSION}/${release_file}"
+url="https://github.com/deedubs/helm-convert/releases/download/v${HELM_CONVERT_VERSION}/${release_file}"
 
 mkdir -p $dir
 
