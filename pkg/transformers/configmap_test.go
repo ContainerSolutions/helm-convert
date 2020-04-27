@@ -68,7 +68,7 @@ spring.datasource.password=pass123
 										"SOME_ENV=development",
 										"somekey=not a file",
 									},
-									FileSources: []string{"configmap1-application.properties"},
+									FileSources: []string{"configmaps/configmap1/application.properties"},
 								},
 							},
 						},
@@ -77,7 +77,7 @@ spring.datasource.password=pass123
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{},
 					SourceFiles: map[string]string{
-						"configmap1-application.properties": `
+						"configmaps/configmap1/application.properties": `
 app.name=My app
 spring.jpa.hibernate.ddl-auto=update
 spring.datasource.url=jdbc:mysql://<db_ip>:3306/db_example

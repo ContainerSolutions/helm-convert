@@ -63,7 +63,7 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 			dataDecoded[key] = string(decoded)
 		}
 
-		secretArg.GeneratorArgs.DataSources = TransformDataSource(name, dataDecoded, resources.SourceFiles)
+		secretArg.GeneratorArgs.DataSources = TransformDataSource(t, name, dataDecoded, resources.SourceFiles)
 
 		config.SecretGenerator = append(config.SecretGenerator, secretArg)
 		delete(resources.ResMap, res.Id())

@@ -28,15 +28,15 @@ func TestTransformDataSource(t *testing.T) {
 				"file1.yaml": "content",
 			},
 			expectedSourceFile: map[string]string{
-				"file1.yaml":            "content",
-				"my-configmap-name.txt": "multi\nline",
+				"file1.yaml":                       "content",
+				"configmaps/my-configmap/name.txt": "multi\nline",
 			},
 			expectedOutput: ktypes.DataSources{
 				LiteralSources: []string{
 					"somevar=single line",
 				},
 				FileSources: []string{
-					"my-configmap-name.txt",
+					"configmaps/my-configmap/name.txt",
 				},
 			},
 		},
@@ -60,7 +60,7 @@ func TestTransformDataSource(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
-			output := TransformDataSource(test.resourceName, test.input, test.sourceFiles)
+			output := TransformDataSource(&configMapTransformer{}, test.resourceName, test.input, test.sourceFiles)
 			if diff := pretty.Compare(output, test.expectedOutput); diff != "" {
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}

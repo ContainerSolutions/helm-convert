@@ -66,9 +66,9 @@ func TestResourcesRun(t *testing.T) {
 			expected: &resourcesTransformerArgs{
 				config: &ktypes.Kustomization{
 					Resources: []string{
-						"cm1-cm.yaml",
-						"deploy1-deploy.yaml",
-						"service1-svc.yaml",
+						"resources/cm1-cm.yaml",
+						"resources/deploy1-deploy.yaml",
+						"resources/service1-svc.yaml",
 					},
 				},
 				resources: &types.Resources{

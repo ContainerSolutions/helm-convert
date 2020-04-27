@@ -103,8 +103,8 @@ func TestSecretRun(t *testing.T) {
 								Name: "secret2",
 								DataSources: ktypes.DataSources{
 									FileSources: []string{
-										"secret2-tls.cert",
-										"secret2-tls.key",
+										"secrets/secret2/tls.cert",
+										"secrets/secret2/tls.key",
 									},
 								},
 							},
@@ -124,9 +124,9 @@ func TestSecretRun(t *testing.T) {
 				resources: &types.Resources{
 					ResMap: resmap.ResMap{},
 					SourceFiles: map[string]string{
-						"secret1.env":      "DB_PASSWORD=password\nDB_USERNAME=admin",
-						"secret2-tls.cert": string(cert),
-						"secret2-tls.key":  string(key),
+						"secret1.env":              "DB_PASSWORD=password\nDB_USERNAME=admin",
+						"secrets/secret2/tls.cert": string(cert),
+						"secrets/secret2/tls.key":  string(key),
 					},
 				},
 			},

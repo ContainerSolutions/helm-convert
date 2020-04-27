@@ -60,7 +60,7 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 			},
 		}
 
-		configMapArg.GeneratorArgs.DataSources = TransformDataSource(name, dataMap, resources.SourceFiles)
+		configMapArg.GeneratorArgs.DataSources = TransformDataSource(t, name, dataMap, resources.SourceFiles)
 
 		config.ConfigMapGenerator = append(config.ConfigMapGenerator, configMapArg)
 		delete(resources.ResMap, res.Id())

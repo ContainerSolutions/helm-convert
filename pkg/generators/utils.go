@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io/ioutil"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 
@@ -68,6 +69,8 @@ func writeAndFormatKustomizationConfig(filePath string, comments bool) error {
 // writeFile writes data to a file named by filename.
 func writeFile(filePath string, data []byte, perm os.FileMode) error {
 	glog.V(4).Infof("Writing %s", filePath)
+
+	os.MkdirAll(path.Dir(filePath), 0777)
 
 	err := ioutil.WriteFile(filePath, data, perm)
 	if err != nil {

@@ -1,5 +1,7 @@
 module github.com/ContainerSolutions/helm-convert
 
+go 1.14
+
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Masterminds/goutils v1.1.0 // indirect
@@ -25,8 +27,8 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.2 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
-	golang.org/x/crypto v0.0.0-20181009213950-7c1a557ab941 // indirect
-	golang.org/x/net v0.0.0-20181005035420-146acd28ed58 // indirect
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
+	golang.org/x/tools v0.0.0-20200427163959-9ea0146da6d7 // indirect
 	google.golang.org/grpc v1.15.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.1 // indirect

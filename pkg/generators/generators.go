@@ -59,7 +59,6 @@ func (g *Generator) Render(destination string, config *ktypes.Kustomization,
 		if err != nil {
 			return err
 		}
-
 		err = writeYamlFile(path.Join(destination, filename), res)
 		if err != nil {
 			return err

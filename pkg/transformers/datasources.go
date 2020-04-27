@@ -2,6 +2,8 @@ package transformers
 
 import (
 	"fmt"
+	"path"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -17,8 +19,15 @@ var regexpEnv = regexp.MustCompile("^[A-Z0-9_]+$")
 // format, the resource is converted as EnvFile. If keys contains a file
 // extension and the value is multiline then the file is stored as FileSources,
 // otherwise LiteralSources.
-func TransformDataSource(resourceName string, input map[string]string,
+func TransformDataSource(driver Transformer, resourceName string, input map[string]string,
 	sourceFiles map[string]string) (dataSources ktypes.DataSources) {
+	prefix := ""
+	switch reflect.TypeOf(driver).String() {
+	case "*transformers.configMapTransformer":
+		prefix = "configmaps"
+	case "*transformers.secretTransformer":
+		prefix = "secrets"
+	}
 
 	if len(input) == 0 {
 		return
@@ -34,7 +43,12 @@ func TransformDataSource(resourceName string, input map[string]string,
 			resourceName, envFilename)
 	} else {
 		for key, value := range TransformFileDataSource(input) {
-			filename := fmt.Sprintf("%s-%s", resourceName, key)
+			filename := fmt.Sprintf("%s/%s", resourceName, key)
+
+			if prefix != "" {
+				filename = path.Join(prefix, filename)
+			}
+
 			sourceFiles[filename] = value
 			dataSources.FileSources = append(dataSources.FileSources, filename)
 		}

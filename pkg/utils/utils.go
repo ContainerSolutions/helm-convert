@@ -22,7 +22,7 @@ func GetResourceFileName(id resid.ResId, res *resource.Resource) (string, error)
 		return "", err
 	}
 
-	return strings.ToLower(fmt.Sprintf("%s-%s.yaml", name, GetKindAbbreviation(kind))), nil
+	return strings.ToLower(fmt.Sprintf("resources/%s-%s.yaml", name, GetKindAbbreviation(kind))), nil
 }
 
 // GetKindAbbreviation return the abbreviation of a given resource

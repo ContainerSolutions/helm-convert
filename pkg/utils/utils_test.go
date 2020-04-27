@@ -39,7 +39,7 @@ func TestGetResourceFileName(t *testing.T) {
 						},
 					}),
 			},
-			expected: "my-deployment-deploy.yaml",
+			expected: "resources/my-deployment-deploy.yaml",
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
