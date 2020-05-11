@@ -216,7 +216,9 @@ func (k *convertCmd) run() error {
 		}
 	}
 
-	config := &ktypes.Kustomization{}
+	config := &ktypes.Kustomization{
+		Namespace: k.namespace,
+	}
 
 	defaultTransfomers := []transformers.Transformer{
 		transformers.NewLabelsTransformer([]string{"chart", "release", "heritage"}),

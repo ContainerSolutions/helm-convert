@@ -49,7 +49,8 @@ func (t *secretTransformer) Transform(config *ktypes.Kustomization, resources *t
 
 		secretArg := ktypes.SecretArgs{
 			GeneratorArgs: ktypes.GeneratorArgs{
-				Name: name,
+				Name:      name,
+				Namespace: config.Namespace,
 			},
 			Type: secretType,
 		}

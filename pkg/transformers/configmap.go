@@ -56,7 +56,8 @@ func (t *configMapTransformer) Transform(config *ktypes.Kustomization, resources
 
 		configMapArg := ktypes.ConfigMapArgs{
 			GeneratorArgs: ktypes.GeneratorArgs{
-				Name: name,
+				Name:      name,
+				Namespace: config.Namespace,
 			},
 		}
 
