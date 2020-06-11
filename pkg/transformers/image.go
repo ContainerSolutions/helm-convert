@@ -11,7 +11,6 @@ import (
 
 // imageTransformer replace images
 type imageTransformer struct {
-	images []kimage.Image
 }
 
 var _ Transformer = &imageTransformer{}
@@ -68,38 +67,43 @@ LOOP_CONTAINERS:
 		}
 
 		imagePathStr := imagePath.(string)
+		image := createKImage(imagePathStr)
 
-		hasDigest := strings.Contains(imagePathStr, "@")
-		separator := ":"
-
-		if hasDigest {
-			separator = "@"
-		}
-
-		s := strings.Split(imagePathStr, separator)
-
-		image := kimage.Image{
-			Name: s[0],
-		}
-
-		// doesn't add image if already in the list
+		// don't add image if already in the list
 		for _, v := range config.Images {
 			if v.Name == image.Name {
 				continue LOOP_CONTAINERS
 			}
 		}
 
-		if len(s) > 1 {
-			if hasDigest {
-				image.Digest = s[1]
-			} else {
-				image.NewTag = s[1]
-			}
-		}
-
 		config.Images = append(config.Images, image)
 	}
 	return nil
+}
+
+func createKImage(imagePathStr string) kimage.Image {
+	hasDigest := strings.Contains(imagePathStr, "@")
+	separator := ":"
+
+	if hasDigest {
+		separator = "@"
+	}
+
+	s := strings.Split(imagePathStr, separator)
+	image := kimage.Image{
+		Name: s[0],
+	}
+	if len(s) > 1 {
+		// combine everything but the last element in the string
+		// fixes if image URL has a port
+		image.Name = strings.Join(s[:len(s)-1], separator)
+		if hasDigest {
+			image.Digest = s[len(s)-1]
+		} else {
+			image.NewTag = s[len(s)-1]
+		}
+	}
+	return image
 }
 
 func (pt *imageTransformer) findContainers(config *ktypes.Kustomization, obj map[string]interface{}) error {

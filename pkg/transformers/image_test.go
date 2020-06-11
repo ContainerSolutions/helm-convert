@@ -59,6 +59,10 @@ func TestImageRun(t *testing.T) {
 														"name":  "alpine",
 														"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
 													},
+													map[string]interface{}{
+														"name":  "centos",
+														"image": "myregistry:5000/namespace/centos:1.2.3",
+													},
 												},
 											},
 										},
@@ -91,9 +95,10 @@ func TestImageRun(t *testing.T) {
 			expected: &imageTransformerArgs{
 				config: &ktypes.Kustomization{
 					Images: []kimage.Image{
-						kimage.Image{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
-						kimage.Image{Name: "busybox"},
-						kimage.Image{Name: "nginx", NewTag: "1.7.9"},
+						{Name: "alpine", Digest: "sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"},
+						{Name: "busybox"},
+						{Name: "myregistry:5000/namespace/centos", NewTag: "1.2.3"},
+						{Name: "nginx", NewTag: "1.7.9"},
 					},
 				},
 				resources: &types.Resources{
@@ -121,6 +126,10 @@ func TestImageRun(t *testing.T) {
 													map[string]interface{}{
 														"name":  "alpine",
 														"image": "alpine@sha256:24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3",
+													},
+													map[string]interface{}{
+														"name":  "centos",
+														"image": "myregistry:5000/namespace/centos:1.2.3",
 													},
 												},
 											},
@@ -169,5 +178,33 @@ func TestImageRun(t *testing.T) {
 				t.Errorf("%s, diff: (-got +want)\n%s", test.name, diff)
 			}
 		})
+	}
+}
+
+func TestCreateKImage(t *testing.T) {
+	imagePath := "myregistry:5000/namespace/busybox:1.2.3"
+	image := createKImage(imagePath)
+	if image.Name != "myregistry:5000/namespace/busybox" || image.NewTag != "1.2.3" {
+		t.Fatalf("Parsed imageName: %s newTag %s from %s", image.Name, image.NewTag, imagePath)
+	}
+
+	imagePath = "myregistry:5000/namespace/busybox@sha256" +
+		":24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3"
+	image = createKImage(imagePath)
+	if image.Name != "myregistry:5000/namespace/busybox" || image.Digest != "sha256:"+
+		"24a0c4b4a4c0eb97a1aabb8e29f18e917d05abfe1b7a7c07857230879ce7d3d3" {
+		t.Fatalf("Parsed imageName: %s digest %s from %s", image.Name, image.Digest, imagePath)
+	}
+
+	imagePath = "busybox"
+	image = createKImage(imagePath)
+	if image.Name != "busybox" {
+		t.Fatalf("Parsed imageName: %s newTag %s from %s", image.Name, image.NewTag, imagePath)
+	}
+
+	imagePath = "busybox:1.2.3"
+	image = createKImage(imagePath)
+	if image.Name != "busybox" || image.NewTag != "1.2.3" {
+		t.Fatalf("Parsed imageName: %s newTag %s from %s", image.Name, image.NewTag, imagePath)
 	}
 }
