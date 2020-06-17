@@ -1,16 +1,12 @@
 package transformers
 
 import (
-	"regexp"
-
 	"github.com/ContainerSolutions/helm-convert/pkg/types"
 	"github.com/golang/glog"
 	ktypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
 type configMapTransformer struct{}
-
-var regexpMultiline = regexp.MustCompile("\n")
 
 var _ Transformer = &configMapTransformer{}
 
