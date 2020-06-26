@@ -42,7 +42,7 @@ func TestGetResourceFileName(t *testing.T) {
 			expected: "resources/my-deployment-test-deploy.yaml",
 		},
 		{
-			name: "it should return a filename with -",
+			name: "it should return a filename with no colon",
 			input: getResourceFileNameArgs{
 				id: resid.NewResId(deploy, "deploy1"),
 				resource: rf.FromMap(
