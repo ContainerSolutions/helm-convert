@@ -41,6 +41,21 @@ func TestGetResourceFileName(t *testing.T) {
 			},
 			expected: "resources/my-deployment-deploy.yaml",
 		},
+		{
+			name: "it should return a filename",
+			input: getResourceFileNameArgs{
+				id: resid.NewResId(deploy, "deploy1"),
+				resource: rf.FromMap(
+					map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Deployment",
+						"metadata": map[string]interface{}{
+							"name": "my:deployment",
+						},
+					}),
+			},
+			expected: "resources/my-deployment-deploy.yaml",
+		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
 			output, err := GetResourceFileName(test.input.id, test.input.resource)
