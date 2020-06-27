@@ -35,7 +35,22 @@ func TestGetResourceFileName(t *testing.T) {
 						"apiVersion": "v1",
 						"kind":       "Deployment",
 						"metadata": map[string]interface{}{
-							"name": "my-deployment",
+							"name": "my-deployment:test",
+						},
+					}),
+			},
+			expected: "resources/my-deployment-test-deploy.yaml",
+		},
+		{
+			name: "it should return a filename with no colon",
+			input: getResourceFileNameArgs{
+				id: resid.NewResId(deploy, "deploy1"),
+				resource: rf.FromMap(
+					map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Deployment",
+						"metadata": map[string]interface{}{
+							"name": "my:deployment",
 						},
 					}),
 			},

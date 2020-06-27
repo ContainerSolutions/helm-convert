@@ -22,6 +22,10 @@ func GetResourceFileName(id resid.ResId, res *resource.Resource) (string, error)
 		return "", err
 	}
 
+	if strings.Contains(name, ":") {
+		name = strings.ReplaceAll(name, ":", "-")
+	}
+
 	return strings.ToLower(fmt.Sprintf("resources/%s-%s.yaml", name, GetKindAbbreviation(kind))), nil
 }
 
