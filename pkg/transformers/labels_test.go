@@ -222,9 +222,10 @@ func TestLabelsRun(t *testing.T) {
 								"metadata": map[string]interface{}{
 									"name": "cm1",
 									"labels": map[string]interface{}{
-										"chart":    "nginx",
-										"heritage": "Tiller",
-										"release":  "nginx",
+										"chart":         "nginx",
+										"heritage":      "Tiller",
+										"release":       "nginx",
+										"helm.sh/chart": "1.5.2",
 									},
 								},
 							}),
@@ -235,9 +236,10 @@ func TestLabelsRun(t *testing.T) {
 								"metadata": map[string]interface{}{
 									"name": "deploy1",
 									"labels": map[string]interface{}{
-										"chart":    "nginx",
-										"heritage": "Tiller",
-										"release":  "nginx",
+										"chart":         "nginx",
+										"heritage":      "Tiller",
+										"release":       "nginx",
+										"helm.sh/chart": "1.5.2",
 									},
 								},
 							}),
@@ -248,16 +250,18 @@ func TestLabelsRun(t *testing.T) {
 								"metadata": map[string]interface{}{
 									"name": "service1",
 									"labels": map[string]interface{}{
-										"chart":    "nginx",
-										"heritage": "Tiller",
-										"release":  "nginx",
+										"chart":         "nginx",
+										"heritage":      "Tiller",
+										"release":       "nginx",
+										"helm.sh/chart": "1.5.2",
 									},
 								},
 								"spec": map[string]interface{}{
 									"selector": map[string]interface{}{
-										"chart":    "nginx",
-										"heritage": "Tiller",
-										"release":  "nginx",
+										"chart":         "nginx",
+										"heritage":      "Tiller",
+										"release":       "nginx",
+										"helm.sh/chart": "1.5.2",
 									},
 								},
 							}),
@@ -268,17 +272,19 @@ func TestLabelsRun(t *testing.T) {
 								"metadata": map[string]interface{}{
 									"name": "poddisruptionbudget1",
 									"labels": map[string]interface{}{
-										"chart":    "nginx",
-										"heritage": "Tiller",
-										"release":  "nginx",
+										"chart":         "nginx",
+										"heritage":      "Tiller",
+										"release":       "nginx",
+										"helm.sh/chart": "1.5.2",
 									},
 								},
 								"spec": map[string]interface{}{
 									"selector": map[string]interface{}{
 										"matchLabels": map[string]interface{}{
-											"chart":    "nginx",
-											"heritage": "Tiller",
-											"release":  "nginx",
+											"chart":         "nginx",
+											"heritage":      "Tiller",
+											"release":       "nginx",
+											"helm.sh/chart": "1.5.2",
 										},
 									},
 								},
@@ -340,7 +346,7 @@ func TestLabelsRun(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("%s", test.name), func(t *testing.T) {
-			lt := NewLabelsTransformer([]string{"chart", "release", "heritage"})
+			lt := NewLabelsTransformer([]string{"chart", "release", "heritage", "helm.sh/chart"})
 			err := lt.Transform(test.input.config, test.input.resources)
 
 			if err != nil {

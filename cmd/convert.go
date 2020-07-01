@@ -221,7 +221,7 @@ func (k *convertCmd) run() error {
 	}
 
 	defaultTransfomers := []transformers.Transformer{
-		transformers.NewLabelsTransformer([]string{"chart", "release", "heritage"}),
+		transformers.NewLabelsTransformer([]string{"chart", "release", "heritage", "helm.sh/chart"}),
 		transformers.NewAnnotationsTransformer([]string{
 			hooks.HookAnno,
 			hooks.HookWeightAnno,
