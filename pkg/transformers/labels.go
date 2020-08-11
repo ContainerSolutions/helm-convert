@@ -106,6 +106,7 @@ RESOURCES_LOOP:
 
 func (t *labelsTransformer) removeLabels(config *ktypes.Kustomization, resources *types.Resources) error {
 	paths := []string{"matchLabels", "labels", "selector"}
+	paths = append(paths, t.keys...)
 	for id := range resources.ResMap {
 		obj := resources.ResMap[id].Map()
 		for _, path := range paths {
