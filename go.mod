@@ -28,7 +28,7 @@ require (
 	github.com/spf13/pflag v1.0.2 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/tools v0.0.0-20200916122506-6ec2cde9631b // indirect
+	golang.org/x/tools v0.0.0-20200916140129-56d9a0cd3487 // indirect
 	google.golang.org/grpc v1.15.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.1 // indirect
