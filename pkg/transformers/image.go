@@ -41,8 +41,8 @@ func (pt *imageTransformer) findImage(config *ktypes.Kustomization, obj map[stri
 	paths := []string{"containers", "initContainers"}
 	found := false
 	for _, path := range paths {
-		_, found = obj[path]
-		if found {
+		val, found := obj[path]
+		if found && val != nil {
 			err := pt.getImageTag(config, obj, path)
 			if err != nil {
 				return err

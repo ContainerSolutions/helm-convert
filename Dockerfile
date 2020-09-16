@@ -20,7 +20,7 @@ RUN if [ "$(openssl sha1 -sha256 ${HELM_TMP_FILE} | awk '{print $2}')" != "$(cat
   fi
 RUN tar -xvf helm-${HELM_VERSION}-linux-amd64.tar.gz
 
-FROM alpine:3.8
+FROM alpine:3.12
 COPY --from=helm /linux-amd64/helm /usr/local/bin/helm
 RUN helm init --skip-refresh --client-only && \
   mkdir -p /root/.helm/plugins/helm-convert
