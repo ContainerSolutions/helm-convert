@@ -23,6 +23,7 @@ RUN tar -xvf helm-${HELM_VERSION}-linux-amd64.tar.gz
 FROM alpine:3.12
 COPY --from=helm /linux-amd64/helm /usr/local/bin/helm
 RUN helm init --skip-refresh --client-only && \
+  helm repo update && \
   mkdir -p /root/.helm/plugins/helm-convert
 COPY plugin.yaml /root/.helm/plugins/helm-convert/plugin.yaml
 COPY --from=build /go/helm-convert /root/.helm/plugins/helm-convert/helm-convert
